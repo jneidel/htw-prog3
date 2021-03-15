@@ -45,10 +45,6 @@ public class MediaDB implements MediaDBI, Serializable {
 
     ArrayList<MediaContent> db = new ArrayList<MediaContent>();
 
-    public ArrayList getdb() {
-        return this.db;
-    }
-
     public void upload(MediaContent itemToUpload) {
         for ( MediaContent item : this.db ) {
             if ( item.getAddress().equals( itemToUpload.getAddress() ) ) {
@@ -124,7 +120,7 @@ public class MediaDB implements MediaDBI, Serializable {
         // if it does not exist in the first place -> do nothing
     }
 
-    ArrayList<Uploader> producers = new ArrayList<Uploader>();
+    public ArrayList<Uploader> producers = new ArrayList<Uploader>();
     public Uploader createProducer( String name ) {
         for ( Uploader prod : this.producers ) {
             if ( prod.getName().equals( name ) ) {
