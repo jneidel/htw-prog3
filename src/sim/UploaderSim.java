@@ -1,6 +1,6 @@
 package sim;
 
-import mediaDB.UploaderI;
+import gl.UploaderI;
 import util.MediaGenerator;
 
 public class UploaderSim extends Thread {

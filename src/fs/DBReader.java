@@ -1,6 +1,6 @@
 package fs;
 
-import mediaDB.MediaContent;
+import gl.MediaContent;
 
 import java.util.ArrayList;
 import java.util.Random;

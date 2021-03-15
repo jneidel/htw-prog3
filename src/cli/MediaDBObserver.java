@@ -1,6 +1,6 @@
 package cli;
 
-import mediaDB.MediaDB;
+import gl.MediaDB;
 import util.Observer;
 
 public class MediaDBObserver implements Observer {

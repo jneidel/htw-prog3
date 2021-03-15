@@ -1,4 +1,4 @@
-package mediaDB;
+package gl;
 
 import java.io.Serializable;
 import java.util.Collection;

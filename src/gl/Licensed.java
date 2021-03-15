@@ -1,4 +1,4 @@
-package mediaDB;
+package gl;
 
 interface LicensedI extends ContentI {
     String getHolder();

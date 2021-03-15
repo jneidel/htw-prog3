@@ -1,6 +1,6 @@
 package routing;
 
-import mediaDB.MediaDB;
+import gl.MediaDB;
 
 import java.io.EOFException;
 import java.io.ObjectInputStream;

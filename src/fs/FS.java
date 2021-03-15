@@ -1,7 +1,7 @@
 package fs;
 
 import cli.MediaDBObserver;
-import mediaDB.MediaDB;
+import gl.MediaDB;
 import util.Observer;
 
 import java.io.*;

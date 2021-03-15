@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import mediaDB.MediaContent;
-import mediaDB.MediaDB;
-import mediaDB.UploaderI;
+import gl.MediaContent;
+import gl.MediaDB;
+import gl.UploaderI;
 import cli.Parser;
 import util.IllegalNumberOfArgumentsException;
 

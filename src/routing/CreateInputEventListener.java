@@ -1,7 +1,7 @@
 package routing;
 
-import mediaDB.MediaContent;
-import mediaDB.MediaDB;
+import gl.MediaContent;
+import gl.MediaDB;
 import cli.Parser;
 
 import java.util.Arrays;

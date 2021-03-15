@@ -1,6 +1,6 @@
 package gui;
 
-import mediaDB.MediaDB;
+import gl.MediaDB;
 import util.Observer;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package fs;
 
-import mediaDB.MediaContent;
-import mediaDB.MediaDB;
+import gl.MediaContent;
+import gl.MediaDB;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -9,8 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import mediaDB.MediaContent;
-import mediaDB.MediaDB;
+import gl.MediaContent;
+import gl.MediaDB;
 import util.MediaGenerator;
 
 public class Main extends Application {

@@ -1,4 +1,4 @@
-package mediaDB;
+package gl;
 
 public interface UploaderI {
     String getName();

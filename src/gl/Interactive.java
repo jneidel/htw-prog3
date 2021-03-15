@@ -1,4 +1,4 @@
-package mediaDB;
+package gl;
 
 interface InteractiveI extends ContentI {
     String getType();
