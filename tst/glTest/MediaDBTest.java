@@ -31,7 +31,6 @@ public class MediaDBTest {
         assertEquals( result[0], producerStrArr[0] );
         assertEquals( result[1], producerStrArr[1] );
     }
-
     @Test void createDuplicateUploader() {
         Exception e = assertThrows( IllegalArgumentException.class, () ->
             this.db.createProducer( "default" ) // created in BeforeEach

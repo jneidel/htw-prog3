@@ -7,8 +7,8 @@ interface InteractiveI extends ContentI {
 public class Interactive extends Content implements InteractiveI {
     String type;
 
-    public Interactive( String address, String type ) {
-        super( address );
+    public Interactive( String address, UploaderI uploader, String type ) {
+        super( address, uploader );
         this.type = type;
     }
 

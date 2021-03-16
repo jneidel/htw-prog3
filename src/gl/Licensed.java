@@ -6,8 +6,8 @@ interface LicensedI extends ContentI {
 
 public class Licensed extends Content implements LicensedI {
     String holder;
-    public Licensed( String address, String holder ) {
-        super( address );
+    public Licensed( String address, UploaderI uploader, String holder ) {
+        super( address, uploader );
         this.holder = holder;
     }
 

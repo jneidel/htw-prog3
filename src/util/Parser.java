@@ -128,6 +128,6 @@ public class Parser {
         } else {
             throw new IllegalNumberOfArgumentsException( MIN_REQUIRED_NR_OF_ARGS + "+ required" );
         }
-        return new MediaContent( "", 0L, Duration.ofSeconds(0), new BigDecimal( "0 " ) );
+        return new MediaContent( "", this.producer, 0L, Duration.ofSeconds(0), new BigDecimal( "0 " ) );
     }
 }

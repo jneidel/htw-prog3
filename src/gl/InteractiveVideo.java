@@ -12,7 +12,7 @@ public class InteractiveVideo extends Video implements InteractiveVideoI {
 
     public InteractiveVideo( String address, long bitrate, Duration length, BigDecimal size, UploaderI uploader, int width, int height, String encoding, String type ) {
         super(address, bitrate, length, size, uploader, width, height, encoding);
-        this.interactive = new Interactive( address, type );
+        this.interactive = new Interactive( address, uploader, type );
     }
 
     public String getType() {

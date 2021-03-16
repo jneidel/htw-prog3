@@ -2,7 +2,6 @@ package gl;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 interface ContentI {
@@ -11,12 +10,13 @@ interface ContentI {
     long getAccessCount();
 }
 
-public class Content implements ContentI,Serializable {
+public class Content extends Uploadable implements ContentI,Serializable {
     String address;
     Collection<Tag> tags = new LinkedList<Tag>();
     long accessCount = 0; // how often the content (represented by it's address) has been accessed
 
-    public Content( String address ) {
+    public Content( String address, UploaderI uploader ) {
+        super( uploader );
         this.address = address;
     }
 

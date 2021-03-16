@@ -15,8 +15,8 @@ public class MediaContent extends Content implements MediaContentI {
     Duration length;
     BigDecimal size;
 
-    public MediaContent( String address, long bitrate, Duration length, BigDecimal size ) {
-        super( address );
+    public MediaContent( String address, UploaderI uploader, long bitrate, Duration length, BigDecimal size ) {
+        super( address, uploader );
         this.bitrate = bitrate;
         this.length = length;
         this.size = size;

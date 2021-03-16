@@ -12,7 +12,7 @@ public class LicensedAudio extends Audio implements LicensedAudioI {
 
     public LicensedAudio( String address, long bitrate, Duration length, BigDecimal size, UploaderI uploader, int samplingRate, String encoding, String holderName ) {
         super( address, bitrate, length, size, uploader, samplingRate, encoding );
-        this.licensed = new Licensed( address, holderName );
+        this.licensed = new Licensed( address, uploader, holderName );
     }
 
     public String getHolder() {
