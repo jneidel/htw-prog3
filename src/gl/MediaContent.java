@@ -11,11 +11,11 @@ interface MediaContentI extends ContentI,Serializable {
 }
 
 public class MediaContent extends Content implements MediaContentI {
-    long bitrate;
-    Duration length;
-    BigDecimal size;
+    private long bitrate;
+    private Duration length;
+    private BigDecimal size;
 
-    public MediaContent( String address, UploaderI uploader, long bitrate, Duration length, BigDecimal size ) {
+    public MediaContent( String address, Uploader uploader, long bitrate, Duration length, BigDecimal size ) {
         super( address, uploader );
         this.bitrate = bitrate;
         this.length = length;

@@ -20,9 +20,9 @@ public class MediaGenerator {
 
     static Random rand = new Random();
 
-    UploaderI producer;
+    Uploader producer;
 
-    public MediaGenerator( UploaderI producer ) {
+    public MediaGenerator( Uploader producer ) {
         this.producer = producer;
     }
 

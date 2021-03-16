@@ -15,7 +15,7 @@ public class App {
     public static void main( String[] args ) {
         MediaDB db = new MediaDB();
         db.attachObserver( new MediaDBObserver( db ) );
-        UploaderI producer = db.createProducer( "jneidel" );
+        Uploader producer = db.createProducer( "jneidel" );
 
         /* simulation test
         SimDB sdb = new SimDB( db );

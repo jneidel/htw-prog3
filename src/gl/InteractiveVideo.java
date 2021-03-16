@@ -10,7 +10,7 @@ public class InteractiveVideo extends Video implements InteractiveVideoI {
     static final long serialVersionUID = 1L;
     Interactive interactive;
 
-    public InteractiveVideo( String address, long bitrate, Duration length, BigDecimal size, UploaderI uploader, int width, int height, String encoding, String type ) {
+    public InteractiveVideo( String address, long bitrate, Duration length, BigDecimal size, Uploader uploader, int width, int height, String encoding, String type ) {
         super(address, bitrate, length, size, uploader, width, height, encoding);
         this.interactive = new Interactive( address, uploader, type );
     }

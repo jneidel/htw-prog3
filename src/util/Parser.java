@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 public class Parser {
-    UploaderI producer;
-    public Parser( UploaderI prod ) {
+    Uploader producer;
+    public Parser( Uploader prod ) {
         this.producer = prod;
     }
 

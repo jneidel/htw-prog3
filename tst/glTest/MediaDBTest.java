@@ -2,10 +2,7 @@ package glTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import gl.Content;
-import gl.MediaContent;
-import gl.MediaDB;
-import gl.UploaderI;
+import gl.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +13,12 @@ import java.util.Date;
 
 public class MediaDBTest {
     MediaDB db;
-    UploaderI producer;
+    Uploader producer;
 
     MediaContent sampleItem;
     String sampleAddress = "testing sample item";
     long sampleBitrate = 1L;
-    BigDecimal sampleSize = new BigDecimal( 1 );
+    BigDecimal sampleSize = new BigDecimal( 1000 ); // 1mb
     Duration sampleDuration = Duration.ofSeconds( 0 + 1 * 60 + 0 * 60 * 60); // 1min
 
     @BeforeEach void setup() {
@@ -36,10 +33,10 @@ public class MediaDBTest {
 
         this.db.createProducer( "prod" );
 
-        Object[] producerArr = this.db.producers.toArray();
+        Object[] producerArr = this.db.getProducers().toArray();
         String[] producerStrArr = new String[2];
         for (int i = 0; i < 2; i++) {
-            producerStrArr[i] = ((UploaderI) producerArr[i]).getName();
+            producerStrArr[i] = ((Uploader) producerArr[i]).getName();
         }
 
         // no deep equality supported, manual checking
@@ -73,7 +70,7 @@ public class MediaDBTest {
     }
     @Test void uploadWithInvalidProducer() {
         MediaDB differentDB = new MediaDB();
-        UploaderI otherDBsProducer = differentDB.createProducer( "testing" );
+        Uploader otherDBsProducer = differentDB.createProducer( "testing" );
 
         MediaContent itemWithInvalidProducer = new MediaContent( this.sampleAddress, otherDBsProducer, this.sampleBitrate, this.sampleDuration, this.sampleSize );
 
@@ -90,5 +87,46 @@ public class MediaDBTest {
         assertEquals( new Date().getDate(), uploadDate.getDate() );
         assertEquals( new Date().getMonth(), uploadDate.getMonth() );
         assertEquals( new Date().getHours(), uploadDate.getHours() );
+    }
+    @Test void uploadWithValidSize() {
+        this.db.upload( this.sampleItem );
+
+        assertEquals( this.sampleSize, this.db.getCurrentCapacity() );
+    }
+    @Test void uploadWithInvalidSize() {
+        final int MAX_CAPACITY = 100;
+        final int ITEM_CAPACITY = 500;
+
+        MediaDB db = new MediaDB( new BigDecimal( MAX_CAPACITY ) );
+        Uploader prod = db.createProducer( "size test prod" );
+        MediaContent item = new MediaContent( this.sampleAddress, prod, this.sampleBitrate, this.sampleDuration, new BigDecimal( ITEM_CAPACITY ) );
+
+        Exception e = assertThrows( IllegalArgumentException.class, () ->
+            db.upload( item )
+        );
+        assertEquals( "Database error: not enough space to add item", e.getMessage() );
+    }
+
+    @Test void listFiltersByMediaType() {
+        Audio audio = new Audio( "audio", this.sampleBitrate, this.sampleDuration, this.sampleSize, this.producer, 320000, "mp3" );
+        Video video = new Video( "video", this.sampleBitrate, this.sampleDuration, this.sampleSize, this.producer, 1080 ,720, "mkv" );
+
+        this.db.upload( audio );
+        this.db.upload( video );
+
+        // only has video
+        ArrayList<Video> list = this.db.list( "Video" );
+        assertEquals( "video", list.get( 0 ).getAddress() );
+        assertEquals( 1, list.size() );
+
+        // only has audio
+        ArrayList<Audio> list2 = this.db.list( "Audio" );
+        assertEquals( "audio", list2.get( 0 ).getAddress() );
+        assertEquals( 1, list.size() );
+    }
+    @Test void uploadWithProducerCount() {
+        assertEquals( 0, this.producer.getCount() );
+        this.db.upload( this.sampleItem );
+        assertEquals( 1, this.producer.getCount() );
     }
 }

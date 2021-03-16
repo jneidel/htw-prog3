@@ -10,7 +10,7 @@ public class LicensedVideo extends Video implements LicensedVideoI {
     static final long serialVersionUID = 1L;
     Licensed licensed;
 
-    public LicensedVideo(String address, long bitrate, Duration length, BigDecimal size, UploaderI uploader, int width, int height, String encoding, String holderName) {
+    public LicensedVideo(String address, long bitrate, Duration length, BigDecimal size, Uploader uploader, int width, int height, String encoding, String holderName) {
        super( address, bitrate, length, size, uploader, width, height, encoding );
        this.licensed = new Licensed( address, uploader, holderName );
     }

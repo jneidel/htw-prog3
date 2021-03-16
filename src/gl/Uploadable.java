@@ -8,14 +8,14 @@ interface UploadableI {
 }
 
 public class Uploadable implements UploadableI {
-    UploaderI uploader;
+    Uploader uploader;
     Date date = null;
 
-    public Uploadable( UploaderI uploader ) {
+    public Uploadable( Uploader uploader ) {
         this.uploader = uploader;
     }
 
-    public UploaderI getUploader() {
+    public Uploader getUploader() {
         return this.uploader;
     }
 

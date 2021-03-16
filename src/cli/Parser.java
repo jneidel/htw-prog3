@@ -13,9 +13,9 @@ public class Parser {
     Printer printer = new Printer( "stdout" );
     FS fs = new FS();
     char status = 'r';
-    UploaderI producer;
+    Uploader producer;
 
-    public Parser( UploaderI prod ) {
+    public Parser( Uploader prod ) {
         this.producer = prod;
     }
 

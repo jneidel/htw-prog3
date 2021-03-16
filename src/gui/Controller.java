@@ -9,16 +9,16 @@ import java.util.List;
 
 import gl.MediaContent;
 import gl.MediaDB;
-import gl.UploaderI;
+import gl.Uploader;
 import cli.Parser;
 import util.IllegalNumberOfArgumentsException;
 
 public class Controller {
     MediaDB db;
-    UploaderI producer;
+    Uploader producer;
     Parser parser;
 
-    public void setProducer( UploaderI prod ) { this.producer = prod; }
+    public void setProducer( Uploader prod ) { this.producer = prod; }
     public void setDb( MediaDB db ) {
         this.db = db;
         this.parser = new Parser( this.db.createProducer( "manual" ) );

@@ -1,13 +1,13 @@
 package sim;
 
-import gl.UploaderI;
+import gl.Uploader;
 import util.MediaGenerator;
 
 public class UploaderSim extends Thread {
     static MediaGenerator gen;
     static SimDB db;
 
-    public UploaderSim(SimDB db, UploaderI producer) {
+    public UploaderSim(SimDB db, Uploader producer) {
         this.db = db;
         this.gen = new MediaGenerator( producer );
     }

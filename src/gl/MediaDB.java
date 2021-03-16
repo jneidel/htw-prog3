@@ -4,6 +4,7 @@ import util.Observable;
 import util.Observer;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -12,22 +13,6 @@ interface MediaDBI extends Observable,Serializable {
     ArrayList<MediaContent> list();
     void update( String address, MediaContent newItem );
     void delete( String address );
-}
-
-class Uploader implements UploaderI, Serializable {
-    /*
-        class lives here to disallow the creation of Uploader instances through
-        other means than MediaDB.createProducer(), which assures no duplicates
-     */
-    String name;
-
-    public Uploader( String name ) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
 }
 
 public class MediaDB implements MediaDBI, Serializable {
@@ -45,8 +30,28 @@ public class MediaDB implements MediaDBI, Serializable {
 
     ArrayList<MediaContent> db = new ArrayList<MediaContent>();
 
+    // capacity management
+    private BigDecimal maxCapacity = new BigDecimal( 5000000 ); // in kb, 5gb
+    public MediaDB( BigDecimal maxCapacity ) { this.maxCapacity = maxCapacity; }
+    public MediaDB() {} // passing capacity is optional
+    private BigDecimal currentCapacity = new BigDecimal( 0 );
+    public BigDecimal getMaxCapacity() { return this.currentCapacity; }
+    public BigDecimal getCurrentCapacity() { return this.currentCapacity; }
+    private void addToCurrentSize( BigDecimal toAdd ) throws IllegalArgumentException {
+        BigDecimal newSize = this.currentCapacity.add( toAdd );
+
+        if ( newSize.max( this.maxCapacity ) != this.maxCapacity )
+            throw new IllegalArgumentException( "Database error: not enough space to add item" );
+        this.currentCapacity = newSize;
+    }
+    private void subtractFromCurrentSize( BigDecimal toSubtract ) {
+        this.currentCapacity = this.currentCapacity.subtract( toSubtract )
+            .max( new BigDecimal( 0 ) ); // don't go below 0
+    }
+
     // producers
-    public ArrayList<Uploader> producers = new ArrayList<Uploader>();
+    private ArrayList<Uploader> producers = new ArrayList<Uploader>();
+    public ArrayList<Uploader> getProducers() { return this.producers; }
 
     private boolean hasProducer( String producerName ) {
         boolean producerExists = false;
@@ -80,7 +85,7 @@ public class MediaDB implements MediaDBI, Serializable {
         return itemExists;
     }
 
-    public void upload( MediaContent itemToUpload ) {
+    public void upload( MediaContent itemToUpload ) throws IllegalArgumentException {
         if ( this.hasItem( itemToUpload.getAddress() ) )
             throw new IllegalArgumentException( "Invalid item: duplicate address" );
 
@@ -88,16 +93,19 @@ public class MediaDB implements MediaDBI, Serializable {
             throw new IllegalArgumentException( "Invalid producer: does not exist" );
 
         itemToUpload.setUploadDateToNow();
+        this.addToCurrentSize( itemToUpload.getSize() );
+        itemToUpload.uploader.incrementCount();
+
         this.db.add( itemToUpload );
         this.notifyObservers( "upload" );
     }
 
     public ArrayList<MediaContent> list() { return this.db; }
-    public ArrayList<MediaContent> list( String mediaType ) {
-        ArrayList<MediaContent> results = new ArrayList<MediaContent>();
+    public <T> ArrayList<T> list( String mediaType ) {
+        ArrayList<T> results = new ArrayList<T>();
         for ( MediaContent item : this.db ) {
             if ( item.getClassName().equals( mediaType ) ) {
-                results.add( item );
+                results.add( (T) item );
             }
         }
         return results;

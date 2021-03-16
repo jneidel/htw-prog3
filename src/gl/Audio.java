@@ -16,7 +16,7 @@ public class Audio extends MediaContent implements AudioI {
     int samplingRate;
     String encoding;
 
-    public Audio( String address, long bitrate, Duration length, BigDecimal size, UploaderI uploader, int samplingRate, String encoding ) {
+    public Audio( String address, long bitrate, Duration length, BigDecimal size, Uploader uploader, int samplingRate, String encoding ) {
         super( address, uploader, bitrate, length, size );
         this.samplingRate = samplingRate;
         this.encoding = encoding;

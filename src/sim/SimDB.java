@@ -2,7 +2,6 @@ package sim;
 
 import gl.MediaContent;
 import gl.MediaDB;
-import gl.UploaderI;
 
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
