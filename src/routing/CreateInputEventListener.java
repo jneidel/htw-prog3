@@ -3,6 +3,7 @@ package routing;
 import gl.MediaContent;
 import gl.MediaDB;
 import cli.Parser;
+import gl.UploaderI;
 
 import java.util.Arrays;
 

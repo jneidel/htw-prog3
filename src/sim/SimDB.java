@@ -2,6 +2,7 @@ package sim;
 
 import gl.MediaContent;
 import gl.MediaDB;
+import gl.UploaderI;
 
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
@@ -13,9 +14,7 @@ public class SimDB {
     private final Lock lock = new ReentrantLock();
     private final Condition empty = this.lock.newCondition();
 
-    public SimDB( MediaDB db ) {
-        this.db = db;
-    }
+    public SimDB( MediaDB db ) { this.db = db; }
     public void upload( MediaContent item ) {
         this.lock.lock();
         try {

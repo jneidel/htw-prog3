@@ -45,14 +45,48 @@ public class MediaDB implements MediaDBI, Serializable {
 
     ArrayList<MediaContent> db = new ArrayList<MediaContent>();
 
-    public void upload(MediaContent itemToUpload) {
+    // producers
+    public ArrayList<Uploader> producers = new ArrayList<Uploader>();
+
+    private boolean hasProducer( String producerName ) {
+        boolean producerExists = false;
+
+        for ( Uploader prod : this.producers ) {
+            if ( prod.getName().equals( producerName ) ) {
+                producerExists = true;
+            }
+        }
+        return producerExists;
+    }
+
+    public Uploader createProducer( String name ) {
+        if ( this.hasProducer( name ) )
+            throw new IllegalArgumentException( "Invalid producer: duplicate name" );
+
+        Uploader prod = new Uploader( name );
+        this.producers.add( prod );
+        return prod;
+    }
+
+    private boolean hasItem( String itemAddress ) {
+        boolean itemExists = false;
+
         for ( MediaContent item : this.db ) {
-            if ( item.getAddress().equals( itemToUpload.getAddress() ) ) {
-                throw new IllegalArgumentException( "Duplicate address" );
+            if ( item.getAddress().equals( itemAddress ) ) {
+                itemExists = true;
             }
         }
 
-        // unique address
+        return itemExists;
+    }
+
+    public void upload( MediaContent itemToUpload ) {
+        if ( this.hasItem( itemToUpload.getAddress() ) )
+            throw new IllegalArgumentException( "Invalid item: duplicate address" );
+
+        if ( !this.hasProducer( itemToUpload.getUploader().getName() ) )
+            throw new IllegalArgumentException( "Invalid producer: does not exist" );
+
         this.db.add( itemToUpload );
         this.notifyObservers( "upload" );
     }
@@ -118,18 +152,5 @@ public class MediaDB implements MediaDBI, Serializable {
             this.notifyObservers( "delete" );
         }
         // if it does not exist in the first place -> do nothing
-    }
-
-    public ArrayList<Uploader> producers = new ArrayList<Uploader>();
-    public Uploader createProducer( String name ) {
-        for ( Uploader prod : this.producers ) {
-            if ( prod.getName().equals( name ) ) {
-                throw new IllegalArgumentException( "Duplicate producer name" );
-            }
-        }
-
-        Uploader prod = new Uploader( name );
-        this.producers.add( prod );
-        return prod;
     }
 }

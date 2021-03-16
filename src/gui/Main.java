@@ -1,5 +1,6 @@
 package gui;
 
+import gl.UploaderI;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -45,7 +46,7 @@ public class Main extends Application {
         primaryStage.show();
 
         // generate examples
-        MediaGenerator gen = new MediaGenerator( db.createProducer( "main" ) );
+        MediaGenerator gen = new MediaGenerator( db.createProducer( "main gen" ) );
         MediaContent c1 = gen.generate();
         MediaContent c2 = gen.generate();
         db.upload( c1 );
