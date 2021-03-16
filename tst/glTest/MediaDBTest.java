@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MediaDBTest {
     MediaDB db;
@@ -55,8 +56,12 @@ public class MediaDBTest {
     @Test void upload() {
         this.db.upload( this.sampleItem );
 
-        ArrayList<MediaContent> list = this.db.list();
-        assertTrue( list.contains( this.sampleItem ) );
+        assertNotEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+    }
+    @Test void uploadWithCorrectProducer() {
+        this.db.upload( this.sampleItem );
+
+        assertEquals( this.producer, this.db.getItemByAddress( this.sampleAddress ).getUploader() );
     }
     @Test void uploadDuplicateItem() {
         this.db.upload( this.sampleItem );
@@ -76,5 +81,14 @@ public class MediaDBTest {
                 this.db.upload( itemWithInvalidProducer )
         );
         assertEquals( "Invalid producer: does not exist", e.getMessage() );
+    }
+    @Test void uploadWithValidDate() {
+        this.db.upload( this.sampleItem );
+
+        Date uploadDate = this.db.getItemByAddress( this.sampleAddress ).getUploadDate();
+        assertNotEquals( null, uploadDate );
+        assertEquals( new Date().getDate(), uploadDate.getDate() );
+        assertEquals( new Date().getMonth(), uploadDate.getMonth() );
+        assertEquals( new Date().getHours(), uploadDate.getHours() );
     }
 }

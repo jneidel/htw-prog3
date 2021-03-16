@@ -9,18 +9,16 @@ interface UploadableI {
 
 public class Uploadable implements UploadableI {
     UploaderI uploader;
-    Date date;
+    Date date = null;
 
     public Uploadable( UploaderI uploader ) {
         this.uploader = uploader;
-        this.date = new Date();
     }
 
     public UploaderI getUploader() {
         return this.uploader;
     }
 
-    public Date getUploadDate() {
-        return this.date;
-    }
+    public Date getUploadDate() { return this.date; }
+    public void setUploadDateToNow() { this.date = new Date(); }
 }

@@ -87,6 +87,7 @@ public class MediaDB implements MediaDBI, Serializable {
         if ( !this.hasProducer( itemToUpload.getUploader().getName() ) )
             throw new IllegalArgumentException( "Invalid producer: does not exist" );
 
+        itemToUpload.setUploadDateToNow();
         this.db.add( itemToUpload );
         this.notifyObservers( "upload" );
     }
@@ -100,6 +101,14 @@ public class MediaDB implements MediaDBI, Serializable {
             }
         }
         return results;
+    }
+    public MediaContent getItemByAddress( String address ) {
+        for ( MediaContent item : this.db ) {
+            if ( item.getAddress().equals( address ) ) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public void update( String address, MediaContent newItem ) {
