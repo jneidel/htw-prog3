@@ -1,7 +1,10 @@
 package gui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
@@ -30,10 +33,64 @@ public class Controller {
     private ListView itemList;
     @FXML
     private TextField uploadField;
+    @FXML
+    private TableView<MediaContentBean> tableView;
+    @FXML
+    private TableColumn<MediaContentBean, String> typeColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> addressColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> producerColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Long> bitrateColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> durationColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Double> sizeColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Integer> samplingRateColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> audioColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> videoEncColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Integer> heightColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Integer> widthColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> holderColumn;
+
+    ObservableList<MediaContentBean> content = FXCollections.observableArrayList(MediaContentBean.extractor());
+
+    public void initialize() {
+        tableView.setItems( content );
+
+        this.typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        this.addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+        this.producerColumn.setCellValueFactory(new PropertyValueFactory<>("producer"));
+        this.bitrateColumn.setCellValueFactory(new PropertyValueFactory<>("bitrate"));
+        this.durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        this.sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        this.samplingRateColumn.setCellValueFactory(new PropertyValueFactory<>("samplingRate"));
+        this.audioColumn.setCellValueFactory(new PropertyValueFactory<>("audio"));
+        this.videoEncColumn.setCellValueFactory(new PropertyValueFactory<>("videoEnc"));
+        this.heightColumn.setCellValueFactory(new PropertyValueFactory<>("height"));
+        this.widthColumn.setCellValueFactory(new PropertyValueFactory<>("width"));
+        this.holderColumn.setCellValueFactory(new PropertyValueFactory<>("holder"));
+    }
+
+    public void updateProperties() {
+        this.content.clear();
+        for ( MediaContent m : this.db.list() ) {
+            this.content.add( new MediaContentBean( m ) );
+        }
+    }
+
 
     // called by observer
     public void setList( ArrayList list ) {
         this.itemList.getItems().setAll( list );
+        this.updateProperties();
     }
     public void setStatus( String status ) {
         this.lastAction.setText( status );

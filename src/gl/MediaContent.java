@@ -26,9 +26,7 @@ public class MediaContent extends Content implements MediaContentI {
         return this.bitrate;
     }
 
-    public Duration getLength() {
-        return this.length;
-    }
+    public Duration getLength() { return this.length; }
 
     public BigDecimal getSize() { return this.size; }
 }

@@ -7,7 +7,7 @@ import sim.RemoverSim;
 import sim.SimDB;
 import sim.UploaderSim;
 import util.MediaGenerator;
-import gui.Main;
+import gui.GUI;
 
 import java.io.*;
 
@@ -51,10 +51,10 @@ public class App {
         */
 
         /* gui */
-        // new Main().run();
+        new GUI().run();
 
         /* net */
-        File file = new File( "stream" );
+        /*File file = new File( "stream" );
         try {
             file.createNewFile();
 
@@ -71,6 +71,6 @@ public class App {
         } catch( Exception e ) {
             e.printStackTrace();
             System.exit( 187 );
-        }
+        }*/
     }
 }

@@ -13,7 +13,7 @@ import gl.MediaContent;
 import gl.MediaDB;
 import util.MediaGenerator;
 
-public class Main extends Application {
+public class GUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         MediaDB db = new MediaDB();
         db.attachObserver( new cli.MediaDBObserver( db ) ); // logging
@@ -48,8 +48,12 @@ public class Main extends Application {
         MediaGenerator gen = new MediaGenerator( db.createProducer( "main gen" ) );
         MediaContent c1 = gen.generate();
         MediaContent c2 = gen.generate();
+        MediaContent c3 = gen.generate();
+        MediaContent c4 = gen.generate();
         db.upload( c1 );
         db.upload( c2 );
+        db.upload( c3 );
+        db.upload( c4 );
     }
     public void run() {
         launch();

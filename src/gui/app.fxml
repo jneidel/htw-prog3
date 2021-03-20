@@ -20,6 +20,27 @@
                     <ListView fx:id="itemList" prefWidth="450"> </ListView>
                 </content>
             </ScrollPane>
+            <Label text="Readonly TableView"></Label>
+            <TableView fx:id="tableView" layoutX="20.0" layoutY="30.0" prefHeight="300.0" prefWidth="600.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="typeColumn" editable="false" prefWidth="75.0" sortable="false" text="Type" />
+                    <TableColumn fx:id="addressColumn" editable="false" prefWidth="75.0" sortable="false" text="Address" />
+                    <TableColumn fx:id="producerColumn" editable="false" prefWidth="75.0" sortable="false" text="Producer" />
+                    <TableColumn fx:id="bitrateColumn" editable="false" prefWidth="75.0" sortable="false" text="Bitrate" />
+                    <TableColumn fx:id="durationColumn" editable="false" prefWidth="75.0" sortable="false" text="Duration" />
+                    <TableColumn fx:id="sizeColumn" editable="false" prefWidth="75.0" sortable="false" text="Size" />
+                    <TableColumn fx:id="samplingRateColumn" editable="false" prefWidth="75.0" sortable="false" text="Sampling Rate" />
+                    <TableColumn fx:id="audioColumn" editable="false" prefWidth="75.0" sortable="false" text="Audio Enc" />
+                    <TableColumn fx:id="videoEncColumn" editable="false" prefWidth="75.0" sortable="false" text="Video Enc" />
+                    <TableColumn fx:id="heightColumn" editable="false" prefWidth="75.0" sortable="false" text="Height" />
+                    <TableColumn fx:id="widthColumn" editable="false" prefWidth="75.0" sortable="false" text="Width" />
+                    <TableColumn fx:id="holderColumn" editable="false" prefWidth="75.0" sortable="false" text="License Holder" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+
         </VBox>
     </center>
     <bottom>
