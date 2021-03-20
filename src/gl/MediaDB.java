@@ -5,8 +5,9 @@ import util.Observer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 interface MediaDBI extends Observable,Serializable {
     void upload( MediaContent item );
@@ -85,6 +86,32 @@ public class MediaDB implements MediaDBI, Serializable {
         return itemExists;
     }
 
+    private Collection<Tag> usedTags = Collections.<Tag>emptySet();
+    private void combineTags( Collection<Tag> newTags ) {
+        // ref: https://www.baeldung.com/java-combine-multiple-collections
+        Stream<Tag> combinedStream = Stream.concat(
+                this.usedTags.stream(),
+                newTags.stream()
+        );
+        this.usedTags = combinedStream.collect( Collectors.toSet() );
+    }
+    public Tag[][] getTagUsage() {
+        Tag[] allTags = Tag.values();
+        Tag[] used = new Tag[allTags.length];
+        Tag[] unused = new Tag[allTags.length];
+
+        for (int i = 0; i < allTags.length; i++) {
+            Tag v = allTags[i];
+            if ( this.usedTags.contains( v ) )
+                used[i] = v;
+            else
+                unused[i] = v;
+        }
+
+        Tag[][] res = { used, unused };
+        return res;
+    }
+
     public void upload( MediaContent itemToUpload ) throws IllegalArgumentException {
         if ( this.hasItem( itemToUpload.getAddress() ) )
             throw new IllegalArgumentException( "Invalid item: duplicate address" );
@@ -95,6 +122,7 @@ public class MediaDB implements MediaDBI, Serializable {
         itemToUpload.setUploadDateToNow();
         this.addToCurrentSize( itemToUpload.getSize() );
         itemToUpload.uploader.incrementCount();
+        this.combineTags( itemToUpload.getTags() );
 
         this.db.add( itemToUpload );
         this.notifyObservers( "upload" );

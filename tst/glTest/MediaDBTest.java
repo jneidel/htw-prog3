@@ -53,7 +53,7 @@ public class MediaDBTest {
     @Test void upload() {
         this.db.upload( this.sampleItem );
 
-        assertNotEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+        assertTrue( this.db.list().contains( this.sampleItem ) );
     }
     @Test void uploadWithCorrectProducer() {
         this.db.upload( this.sampleItem );
@@ -128,5 +128,31 @@ public class MediaDBTest {
         assertEquals( 0, this.producer.getCount() );
         this.db.upload( this.sampleItem );
         assertEquals( 1, this.producer.getCount() );
+    }
+
+    @Test void getTagUsageWithoutAnyTags() {
+        Tag[] allTags = Tag.values();
+        Tag[] noTags = new Tag[Tag.values().length];
+
+        Tag[][] tagUsage = this.db.getTagUsage();
+        for ( int i = 0; i < Tag.values().length; i++ ) {
+            assertEquals( noTags[i], tagUsage[0][i] );
+            assertEquals( allTags[i], tagUsage[1][i] );
+        }
+    }
+    @Test void getTagUsage() {
+        this.sampleItem.addTag( Tag.Lifestyle );
+        this.db.upload( this.sampleItem );
+
+        Tag[] allTags = Tag.values();
+        Tag[] noTags = new Tag[Tag.values().length];
+        allTags[2] = null;
+        noTags[2] = Tag.Lifestyle;
+
+        Tag[][] tagUsage = this.db.getTagUsage();
+        for ( int i = 0; i < Tag.values().length; i++ ) {
+            assertEquals( noTags[i], tagUsage[0][i] );
+            assertEquals( allTags[i], tagUsage[1][i] );
+        }
     }
 }

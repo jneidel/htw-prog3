@@ -1,8 +1,7 @@
 package gl;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
 interface ContentI {
     String getAddress();
@@ -25,12 +24,8 @@ public class Content extends Uploadable implements ContentI,Serializable {
         return this.address;
     }
 
-    public Collection<Tag> getTags() {
-        return this.tags;
-    }
-    public void addTag( Tag tag ) {
-        this.tags.add( tag );
-    }
+    public Collection<Tag> getTags() { return this.tags; }
+    public void addTag( Tag tag ) { this.tags.add( tag ); }
 
     public long getAccessCount() {
         return this.accessCount;
