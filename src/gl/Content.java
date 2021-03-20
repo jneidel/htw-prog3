@@ -23,6 +23,11 @@ public class Content extends Uploadable implements ContentI,Serializable {
         this.accessCount++;
         return this.address;
     }
+    public String getAddressNonlogging() {
+        // for non-user interaction (MediaDB internal calls)
+        // required for stable testing
+        return this.address;
+    }
 
     public Collection<Tag> getTags() { return this.tags; }
     public void addTag( Tag tag ) { this.tags.add( tag ); }

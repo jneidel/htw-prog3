@@ -78,7 +78,7 @@ public class MediaDB implements MediaDBI, Serializable {
         boolean itemExists = false;
 
         for ( MediaContent item : this.db ) {
-            if ( item.getAddress().equals( itemAddress ) ) {
+            if ( item.getAddressNonlogging().equals( itemAddress ) ) {
                 itemExists = true;
             }
         }
@@ -113,7 +113,7 @@ public class MediaDB implements MediaDBI, Serializable {
     }
 
     public void upload( MediaContent itemToUpload ) throws IllegalArgumentException {
-        if ( this.hasItem( itemToUpload.getAddress() ) )
+        if ( this.hasItem( itemToUpload.getAddressNonlogging() ) )
             throw new IllegalArgumentException( "Invalid item: duplicate address" );
 
         if ( !this.hasProducer( itemToUpload.getUploader().getName() ) )
@@ -128,19 +128,25 @@ public class MediaDB implements MediaDBI, Serializable {
         this.notifyObservers( "upload" );
     }
 
-    public ArrayList<MediaContent> list() { return this.db; }
+    public ArrayList<MediaContent> list() {
+        for ( MediaContent c : this.db )
+            c.accessCount++;
+        return this.db;
+    }
     public <T> ArrayList<T> list( String mediaType ) {
         ArrayList<T> results = new ArrayList<T>();
         for ( MediaContent item : this.db ) {
             if ( item.getClassName().equals( mediaType ) ) {
                 results.add( (T) item );
+                item.accessCount++;
             }
         }
         return results;
     }
     public MediaContent getItemByAddress( String address ) {
         for ( MediaContent item : this.db ) {
-            if ( item.getAddress().equals( address ) ) {
+            if ( item.getAddressNonlogging().equals( address ) ) {
+                item.accessCount++;
                 return item;
             }
         }
@@ -150,7 +156,7 @@ public class MediaDB implements MediaDBI, Serializable {
     public void update( String address, MediaContent newItem ) {
         int matchingIndex = -1;
         for ( int i = 0; i < this.db.size(); i++ ) {
-            if ( this.db.get( i ).getAddress().equals( address ) ) {
+            if ( this.db.get( i ).getAddressNonlogging().equals( address ) ) {
                 matchingIndex = i;
                 break;
             }
@@ -177,7 +183,7 @@ public class MediaDB implements MediaDBI, Serializable {
     public void delete( String address ) {
         int matchingIndex = -1;
         for ( int i = 0; i < this.db.size(); i++ ) {
-            if ( this.db.get( i ).getAddress().equals( address ) ) {
+            if ( this.db.get( i ).getAddressNonlogging().equals( address ) ) {
                 matchingIndex = i;
                 break;
             }

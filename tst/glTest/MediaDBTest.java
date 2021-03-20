@@ -155,4 +155,27 @@ public class MediaDBTest {
             assertEquals( allTags[i], tagUsage[1][i] );
         }
     }
+
+    @Test void getAccessCountWithGetAddress() {
+        this.db.upload( this.sampleItem );
+        this.sampleItem.getAddress();
+
+        assertEquals( 1, this.sampleItem.getAccessCount() );
+    }
+    @Test void getAccessCountWithDbList() {
+        this.db.upload( this.sampleItem );
+        this.db.list();
+        this.db.list( "MediaContent" );
+
+        assertEquals( 2, this.sampleItem.getAccessCount() );
+    }
+    @Test void getAccessCountCombined() {
+        this.db.upload( this.sampleItem );
+        this.db.list();
+        this.sampleItem.getAddress();
+        this.db.list();
+        this.db.list( "MediaContent" );
+
+        assertEquals( 4, this.sampleItem.getAccessCount() );
+    }
 }
