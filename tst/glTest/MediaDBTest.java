@@ -178,4 +178,23 @@ public class MediaDBTest {
 
         assertEquals( 4, this.sampleItem.getAccessCount() );
     }
+
+    @Test void deleteWithAddress() {
+        this.db.upload( this.sampleItem );
+        assertEquals( this.sampleItem, this.db.getItemByAddress( this.sampleAddress ) );
+        this.db.delete( this.sampleAddress );
+        assertEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+    }
+    @Test void deleteWithInstance() {
+        this.db.upload( this.sampleItem );
+        assertEquals( this.sampleItem, this.db.getItemByAddress( this.sampleAddress ) );
+        this.db.delete( this.sampleItem );
+        assertEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+    }
+    @Test void deleteNonExisting() {
+        // no upload
+        assertEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+        this.db.delete( this.sampleItem );
+        assertEquals( null, this.db.getItemByAddress( this.sampleAddress ) );
+    }
 }

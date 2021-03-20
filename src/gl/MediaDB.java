@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 interface MediaDBI extends Observable,Serializable {
     void upload( MediaContent item );
     ArrayList<MediaContent> list();
-    void update( String address, MediaContent newItem );
+    // void update( String address, MediaContent newItem );
     void delete( String address );
 }
 
@@ -153,6 +153,7 @@ public class MediaDB implements MediaDBI, Serializable {
         return null;
     }
 
+    /* need update?
     public void update( String address, MediaContent newItem ) {
         int matchingIndex = -1;
         for ( int i = 0; i < this.db.size(); i++ ) {
@@ -179,6 +180,7 @@ public class MediaDB implements MediaDBI, Serializable {
         db.set( index, newItem );
         this.notifyObservers( "update" );
     }
+    */
 
     public void delete( String address ) {
         int matchingIndex = -1;
