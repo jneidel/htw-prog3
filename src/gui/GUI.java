@@ -45,7 +45,7 @@ public class GUI extends Application {
         primaryStage.show();
 
         // generate examples
-        MediaGenerator gen = new MediaGenerator( db.createProducer( "main gen" ) );
+        MediaGenerator gen = new MediaGenerator( db.createProducer( "generator" ) );
         MediaContent c1 = gen.generate();
         MediaContent c2 = gen.generate();
         MediaContent c3 = gen.generate();

@@ -71,7 +71,16 @@ public class MediaDB implements MediaDBI, Serializable {
 
         Uploader prod = new Uploader( name );
         this.producers.add( prod );
+        this.notifyObservers( "create producer" );
         return prod;
+    }
+    public void deleteProducer( Uploader prod ) {
+        int index = this.producers.indexOf( prod );
+
+        if ( index >= 0 ) {
+            this.producers.remove( index );
+            this.notifyObservers( "delete producer" );
+        }
     }
 
     private boolean hasItem( String itemAddress ) {

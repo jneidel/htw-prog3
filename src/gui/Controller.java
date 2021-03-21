@@ -27,13 +27,13 @@ public class Controller {
     public void setProducer( Uploader prod ) { this.producer = prod; }
     public void setDb( MediaDB db ) {
         this.db = db;
-        this.parser = new Parser( this.db.createProducer( "manual" ) );
+        this.parser = new Parser( this.db.createProducer( "gui manual" ) );
     }
 
     @FXML
-    private Label lastAction;
-    @FXML
     private TextField uploadField;
+
+    // main table
     @FXML
     private TableView<MediaContentBean> tableView;
     @FXML
@@ -62,6 +62,7 @@ public class Controller {
     private TableColumn<MediaContentBean, String> holderColumn;
     @FXML
     private TableColumn<MediaContentBean, String> interactiveTypeColumn;
+
     @FXML
     private ComboBox<Comparator<MediaContentBean>> sortingBox;
     private ObservableList<Comparator<MediaContentBean>> contentComparators;
@@ -106,19 +107,40 @@ public class Controller {
                 new InteractiveTypeComparator()
         );
         this.sortingBox.setItems( this.contentComparators );
+
+        // producers
+        producerTable.setItems( this.producers );
+        this.nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        this.countColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
     }
 
     public void updateProperties() {
         this.content.clear();
-        for ( MediaContent m : this.db.list() ) {
+        for ( MediaContent m : this.db.list() )
             this.content.add( new MediaContentBean( m ) );
-        }
+
+        this.producers.clear();
+        for ( Uploader p : this.db.getProducers() )
+            this.producers.add( new ProducerBean( p ) );
     }
+
+    // producers
+    @FXML
+    private TableView<ProducerBean> producerTable;
+    @FXML
+    private TableColumn<ProducerBean, String> nameColumn;
+    @FXML
+    private TableColumn<ProducerBean, Integer> countColumn;
+    ObservableList<ProducerBean> producers = FXCollections.observableArrayList(ProducerBean.extractor());
 
     // called by observer
     public void setList( ArrayList list ) {
         this.updateProperties();
     }
+
+    @FXML
+    private Label lastAction;
+
     public void setStatus( String status ) {
         this.lastAction.setText( status );
     }
