@@ -1,13 +1,16 @@
 package gui;
 
+import gui.comparators.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import gl.MediaContent;
@@ -29,8 +32,6 @@ public class Controller {
 
     @FXML
     private Label lastAction;
-    @FXML
-    private ListView itemList;
     @FXML
     private TextField uploadField;
     @FXML
@@ -59,11 +60,21 @@ public class Controller {
     private TableColumn<MediaContentBean, Integer> widthColumn;
     @FXML
     private TableColumn<MediaContentBean, String> holderColumn;
+    @FXML
+    private TableColumn<MediaContentBean, String> interactiveTypeColumn;
+    @FXML
+    private ComboBox<Comparator<MediaContentBean>> sortingBox;
+    private ObservableList<Comparator<MediaContentBean>> contentComparators;
 
     ObservableList<MediaContentBean> content = FXCollections.observableArrayList(MediaContentBean.extractor());
+    SortedList<MediaContentBean> sortedContent = content.sorted();
+    @FXML
+    public void onSort() {
+        this.sortedContent.setComparator(sortingBox.getSelectionModel().getSelectedItem());
+    }
 
     public void initialize() {
-        tableView.setItems( content );
+        tableView.setItems( sortedContent );
 
         this.typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         this.addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -77,6 +88,24 @@ public class Controller {
         this.heightColumn.setCellValueFactory(new PropertyValueFactory<>("height"));
         this.widthColumn.setCellValueFactory(new PropertyValueFactory<>("width"));
         this.holderColumn.setCellValueFactory(new PropertyValueFactory<>("holder"));
+        this.interactiveTypeColumn.setCellValueFactory(new PropertyValueFactory<>("interactiveType"));
+
+        this.contentComparators = FXCollections.observableArrayList(
+                new TypeComparator(),
+                new AddressComparator(),
+                new ProducerComparator(),
+                new BitrateComparator(),
+                new DurationComparator(),
+                new SizeComparator(),
+                new SamplingRateComparator(),
+                new AudioEncComparator(),
+                new VideoEncComparator(),
+                new WidthComparator(),
+                new HeightComparator(),
+                new HolderComparator(),
+                new InteractiveTypeComparator()
+        );
+        this.sortingBox.setItems( this.contentComparators );
     }
 
     public void updateProperties() {
@@ -86,10 +115,8 @@ public class Controller {
         }
     }
 
-
     // called by observer
     public void setList( ArrayList list ) {
-        this.itemList.getItems().setAll( list );
         this.updateProperties();
     }
     public void setStatus( String status ) {
@@ -98,8 +125,8 @@ public class Controller {
 
     // on Entf
     public void removeSelection() {
-        List selected = this.itemList.getSelectionModel().getSelectedItems();
-        this.db.delete( (MediaContent) selected.get(0) );
+        ObservableList<MediaContentBean> selected = this.tableView.getSelectionModel().getSelectedItems();
+        this.db.delete( (MediaContent) selected.get(0).src );
     }
 
     @FXML

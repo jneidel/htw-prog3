@@ -3,24 +3,38 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx/11.0.3-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
     <top>
         <HBox prefHeight="20.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <Label text="Upload: " />
-                <TextField fx:id="uploadField" onKeyPressed="#handleUploadField" prefWidth="400"/>
+                <Label text="Upload: ">
+                    <font><Font name="System Bold" size="22.0" /></font>
+                </Label>
+                <TextField fx:id="uploadField" onKeyPressed="#handleUploadField" prefWidth="1200"/>
             </children>
         </HBox>
     </top>
     <center>
         <VBox>
-            <Label>Liste:</Label>
-            <ScrollPane prefWidth="500">
-                <content>
-                    <ListView fx:id="itemList" prefWidth="450"> </ListView>
-                </content>
-            </ScrollPane>
-            <Label text="Readonly TableView"></Label>
+            <HBox fx:id="orderBox" alignment="CENTER_LEFT" spacing="20.0">
+                <children>
+                    <VBox>
+                        <children>
+                            <Label text="Sorting:">
+                                <font>
+                                    <Font name="System Bold" size="16.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                    <ComboBox fx:id="sortingBox" onAction="#onSort" promptText="Order List By" />
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                </padding>
+            </HBox>
             <TableView fx:id="tableView" layoutX="20.0" layoutY="30.0" prefHeight="300.0" prefWidth="600.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="typeColumn" editable="false" prefWidth="75.0" sortable="false" text="Type" />
@@ -35,6 +49,7 @@
                     <TableColumn fx:id="heightColumn" editable="false" prefWidth="75.0" sortable="false" text="Height" />
                     <TableColumn fx:id="widthColumn" editable="false" prefWidth="75.0" sortable="false" text="Width" />
                     <TableColumn fx:id="holderColumn" editable="false" prefWidth="75.0" sortable="false" text="License Holder" />
+                    <TableColumn fx:id="interactiveTypeColumn" editable="false" prefWidth="75.0" sortable="false" text="Int. Type" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

@@ -1,15 +1,17 @@
 package gui;
 
 import gl.*;
-import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.util.Callback;
 
+/*
+    Inspired by:
+    https://bitbucket.org/Jerady/propertiesextractordemo/src/master/src/de/jensd/extractordemo
+*/
+
 public class MediaContentBean {
-    MediaContent src;
+    public MediaContent src;
 
     public MediaContentBean( MediaContent underlyingMediaContent ) {
         this.src = underlyingMediaContent;
@@ -39,6 +41,9 @@ public class MediaContentBean {
             this.audio = new SimpleStringProperty(((AudioVideo) this.src).getEncoding());
             this.holder = new SimpleStringProperty(((LicensedAudioVideo) this.src).getHolder());
         } catch( Exception e ) {}
+        try { // interactive
+            this.interactiveType = new SimpleStringProperty(((InteractiveVideo) this.src).getType());
+        } catch( Exception e ) {}
     }
 
     private StringProperty type = new SimpleStringProperty();
@@ -53,6 +58,7 @@ public class MediaContentBean {
     private IntegerProperty height = new SimpleIntegerProperty();
     private IntegerProperty width = new SimpleIntegerProperty();
     private StringProperty holder = new SimpleStringProperty();
+    private StringProperty interactiveType = new SimpleStringProperty();
 
     public StringProperty typeProperty() { return this.type; }
     public StringProperty addressProperty() { return this.address; }
@@ -66,6 +72,7 @@ public class MediaContentBean {
     public IntegerProperty heightProperty() { return this.height; }
     public IntegerProperty widthProperty() { return this.width; }
     public StringProperty holderProperty() { return this.holder; }
+    public StringProperty interactiveTypeProperty() { return this.interactiveType; }
 
     public static Callback<MediaContentBean, Observable[]> extractor() {
         return (MediaContentBean m) -> new Observable[]{
@@ -80,7 +87,8 @@ public class MediaContentBean {
                 m.videoEncProperty(),
                 m.heightProperty(),
                 m.widthProperty(),
-                m.holderProperty()
+                m.holderProperty(),
+                m.interactiveTypeProperty()
         };
     }
 }
