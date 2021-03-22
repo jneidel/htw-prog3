@@ -25,6 +25,7 @@ public class MediaContentBean {
         this.bitrate = new SimpleLongProperty( this.src.getBitrate() );
         this.duration = new SimpleStringProperty( this.src.getLength().toString() );
         this.size = new SimpleDoubleProperty( this.src.getSize().doubleValue() );
+        this.access = new SimpleLongProperty( this.src.getAccessCount() );
         try { // audio
             this.samplingRate = new SimpleIntegerProperty(((Audio) this.src).getSamplingRate());
             this.audio = new SimpleStringProperty(((Audio) this.src).getEncoding());
@@ -59,6 +60,7 @@ public class MediaContentBean {
     private IntegerProperty width = new SimpleIntegerProperty();
     private StringProperty holder = new SimpleStringProperty();
     private StringProperty interactiveType = new SimpleStringProperty();
+    private LongProperty access = new SimpleLongProperty();
 
     public StringProperty typeProperty() { return this.type; }
     public StringProperty addressProperty() { return this.address; }
@@ -73,6 +75,7 @@ public class MediaContentBean {
     public IntegerProperty widthProperty() { return this.width; }
     public StringProperty holderProperty() { return this.holder; }
     public StringProperty interactiveTypeProperty() { return this.interactiveType; }
+    public LongProperty accessProperty() { return this.access; }
 
     public static Callback<MediaContentBean, Observable[]> extractor() {
         return (MediaContentBean m) -> new Observable[]{
@@ -88,7 +91,8 @@ public class MediaContentBean {
                 m.heightProperty(),
                 m.widthProperty(),
                 m.holderProperty(),
-                m.interactiveTypeProperty()
+                m.interactiveTypeProperty(),
+                m.accessProperty()
         };
     }
 }

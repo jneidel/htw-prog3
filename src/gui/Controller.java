@@ -62,6 +62,8 @@ public class Controller {
     private TableColumn<MediaContentBean, String> holderColumn;
     @FXML
     private TableColumn<MediaContentBean, String> interactiveTypeColumn;
+    @FXML
+    private TableColumn<MediaContentBean, Long> accessColumn;
 
     @FXML
     private ComboBox<Comparator<MediaContentBean>> sortingBox;
@@ -90,6 +92,7 @@ public class Controller {
         this.widthColumn.setCellValueFactory(new PropertyValueFactory<>("width"));
         this.holderColumn.setCellValueFactory(new PropertyValueFactory<>("holder"));
         this.interactiveTypeColumn.setCellValueFactory(new PropertyValueFactory<>("interactiveType"));
+        this.accessColumn.setCellValueFactory(new PropertyValueFactory<>("access"));
 
         this.contentComparators = FXCollections.observableArrayList(
                 new TypeComparator(),
@@ -104,7 +107,8 @@ public class Controller {
                 new WidthComparator(),
                 new HeightComparator(),
                 new HolderComparator(),
-                new InteractiveTypeComparator()
+                new InteractiveTypeComparator(),
+                new AccessComparator()
         );
         this.sortingBox.setItems( this.contentComparators );
 

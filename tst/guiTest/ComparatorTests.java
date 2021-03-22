@@ -236,4 +236,18 @@ public class ComparatorTests {
         Comparator c = new HolderComparator();
         assertTrue( c.compare( ab, bb ) > 0 ); // Performance > Game
     }
+    @Test
+    void compareAccessCount() {
+        MediaContent ac = new MediaContent( "abc", this.producer, this.sampleBitrate, this.sampleDuration, this.sampleSize );
+        MediaContent bc = new MediaContent( "123", this.producer, this.sampleBitrate, this.sampleDuration, this.sampleSize );
+        this.db.upload( ac );
+        this.db.upload( bc );
+        this.db.getItemByAddress( "abc" );
+
+        MediaContentBean ab = new MediaContentBean( ac );
+        MediaContentBean bb = new MediaContentBean( bc );
+
+        Comparator c = new AccessComparator();
+        assertTrue( c.compare( ab, bb ) > 0 ); // 2 > 1
+    }
 }

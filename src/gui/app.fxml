@@ -61,6 +61,7 @@
                     <TableColumn fx:id="widthColumn" editable="false" prefWidth="75.0" sortable="false" text="Width" />
                     <TableColumn fx:id="holderColumn" editable="false" prefWidth="75.0" sortable="false" text="License Holder" />
                     <TableColumn fx:id="interactiveTypeColumn" editable="false" prefWidth="75.0" sortable="false" text="Int. Type" />
+                    <TableColumn fx:id="accessColumn" editable="false" prefWidth="75.0" sortable="false" text="Access Count" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
