@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 interface MediaDBI extends Observable,Serializable {
     void upload( MediaContent item );
     ArrayList<MediaContent> list();
-    // void update( String address, MediaContent newItem );
     void delete( String address );
 }
 
@@ -32,9 +31,9 @@ public class MediaDB implements MediaDBI, Serializable {
     ArrayList<MediaContent> db = new ArrayList<MediaContent>();
 
     // capacity management
-    private BigDecimal maxCapacity = new BigDecimal( 5000000 ); // in kb, 5gb
-    public MediaDB( BigDecimal maxCapacity ) { this.maxCapacity = maxCapacity; }
     public MediaDB() {} // passing capacity is optional
+    public MediaDB( BigDecimal maxCapacity ) { this.maxCapacity = maxCapacity; }
+    private BigDecimal maxCapacity = new BigDecimal( 5000000 ); // in kb, 5gb
     private BigDecimal currentCapacity = new BigDecimal( 0 );
     public BigDecimal getMaxCapacity() { return this.currentCapacity; }
     public BigDecimal getCurrentCapacity() { return this.currentCapacity; }
@@ -71,16 +70,33 @@ public class MediaDB implements MediaDBI, Serializable {
 
         Uploader prod = new Uploader( name );
         this.producers.add( prod );
-        this.notifyObservers( "create producer" );
+        this.notifyObservers( "producer create" );
         return prod;
+    }
+    public Uploader getProducer( String name ) {
+        if ( !this.hasProducer( name ) )
+            throw new IllegalArgumentException( "Invalid producer: does not exist" );
+
+        for ( Uploader prod : this.producers ) {
+            if ( prod.getName().equals( name ) ) {
+                return prod;
+            }
+        }
+        return null; // just to shut up java, does not happen due to hasProducer check
     }
     public void deleteProducer( Uploader prod ) {
         int index = this.producers.indexOf( prod );
 
         if ( index >= 0 ) {
             this.producers.remove( index );
-            this.notifyObservers( "delete producer" );
+            this.notifyObservers( "producer delete" );
         }
+    }
+    public void deleteProducer( String prodName ) {
+        try {
+            Uploader prod = this.getProducer( prodName );
+            this.deleteProducer( prod );
+        } catch ( Exception e ) {} // does not exist in the first place, do nothing
     }
 
     private boolean hasItem( String itemAddress ) {
@@ -134,7 +150,7 @@ public class MediaDB implements MediaDBI, Serializable {
         this.combineTags( itemToUpload.getTags() );
 
         this.db.add( itemToUpload );
-        this.notifyObservers( "upload" );
+        this.notifyObservers( "media upload" );
     }
 
     public ArrayList<MediaContent> list() {
@@ -202,7 +218,7 @@ public class MediaDB implements MediaDBI, Serializable {
 
         if ( matchingIndex >= 0 ) {
             this.db.remove( matchingIndex );
-            this.notifyObservers( "delete" );
+            this.notifyObservers( "media delete" );
         }
         // if it does not exist in the first place -> do nothing
     }
@@ -211,7 +227,7 @@ public class MediaDB implements MediaDBI, Serializable {
 
         if ( index >= 0 ) {
             this.db.remove( index );
-            this.notifyObservers( "delete" );
+            this.notifyObservers( "media delete" );
         }
         // if it does not exist in the first place -> do nothing
     }

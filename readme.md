@@ -3,6 +3,8 @@
 Created by:
 **Jonathan Neidel** (573619)
 
+Zu Quellen siehe Kommentare an den referenzierenden Stellen.
+
 <!--
 Upload examples:
 - `Audio song.aac 320 0:2:45 aac 44000`
@@ -12,3 +14,5 @@ Upload examples:
 - `LicensedVideo movie.mp4 320 0:2:45 mp4 480 720 Warner`
 - `LicensedAudioVideo music_video.mp4 320 0:2:45 mp4 480 720 aac 44000 Warner`
 -->
+
+ArrayList -> LinkedList ersetzen

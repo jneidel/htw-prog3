@@ -3,8 +3,6 @@ package gui;
 import gl.MediaDB;
 import util.Observer;
 
-import java.util.ArrayList;
-
 public class MediaDBObserver implements Observer {
     MediaDB db;
     Controller ctl;
@@ -15,8 +13,7 @@ public class MediaDBObserver implements Observer {
     }
 
     public void update() {
-        ArrayList items = this.db.list();
-        this.ctl.setList( items );
+        this.ctl.setList( this.db.list(), this.db.getProducers() );
         this.ctl.setStatus( this.db.getStatus() );
     }
 }

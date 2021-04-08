@@ -1,10 +1,10 @@
 package glTest;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import gl.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;

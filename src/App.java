@@ -1,21 +1,13 @@
-import cli.MediaDBObserver;
-import fs.FS;
-import gl.*;
-import routing.EventEmitter;
-import routing.EventHandler;
-import sim.RemoverSim;
-import sim.SimDB;
-import sim.UploaderSim;
-import util.MediaGenerator;
 import gui.GUI;
-
-import java.io.*;
 
 public class App {
     public static void main( String[] args ) {
-        MediaDB db = new MediaDB();
-        db.attachObserver( new MediaDBObserver( db ) );
-        Uploader producer = db.createProducer( "jneidel" );
+        GUI.inputArgs = args;
+        new GUI().run(); // new main method
+
+        // MediaDB db = new MediaDB();
+        // db.attachObserver( new MediaDBObserver( db ) );
+        // Uploader producer = db.createProducer( "jneidel" );
 
         /* simulation test
         SimDB sdb = new SimDB( db );
@@ -26,7 +18,7 @@ public class App {
          */
 
         /* manual test */
-        MediaGenerator gen = new MediaGenerator( producer );
+        // MediaGenerator gen = new MediaGenerator( producer );
 
         // MediaContent c1 = gen.generate();
         // MediaContent c2 = gen.generate();
@@ -51,7 +43,6 @@ public class App {
         */
 
         /* gui */
-        new GUI().run();
 
         /* net */
         /*File file = new File( "stream" );

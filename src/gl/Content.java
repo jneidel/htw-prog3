@@ -11,7 +11,7 @@ interface ContentI {
 
 public class Content extends Uploadable implements ContentI,Serializable {
     private String address;
-    private Collection<Tag> tags = new LinkedList<Tag>();
+    private LinkedList<Tag> tags = new LinkedList<Tag>();
     public long accessCount = 0; // how often the content (represented by it's address) has been accessed
 
     public Content( String address, Uploader uploader ) {

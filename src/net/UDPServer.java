@@ -1,7 +1,6 @@
 package net;
 
-import gl.MediaDB;
-import gl.Uploader;
+import routing.EventHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
@@ -12,41 +11,42 @@ public class UDPServer extends Thread implements Server {
     final int PORT = 8088;
     final int PACKET_SIZE = 8080;
 
-    MediaDB db;
-    Uploader producer;
-
-    public UDPServer( MediaDB db ) {
-        this.db = db;
-        this.producer = db.createProducer( "udp server" );
-    }
-
-    public void parseEvent( EventObject evt ) {
-
+    EventHandler handler;
+    public UDPServer( EventHandler handler ) {
+        this.handler = handler;
     }
 
     public void run() {
+        // src: http://www.coderpanda.com/java-socket-programming-transferring-java-object-through-socket-using-udp
         try {
-            DatagramSocket socket = new DatagramSocket( this.PORT, InetAddress.getLocalHost() );
+            DatagramSocket socket = new DatagramSocket( this.PORT );
+            byte[] incomingData = new byte[this.PACKET_SIZE];
 
-            byte[] buffer;
-            DatagramPacket request;
-            DatagramPacket response;
-            ByteArrayInputStream bis;
-            ObjectInputStream ois;
-            while ( true ) {
-                buffer = new byte[this.PACKET_SIZE];
-                request = new DatagramPacket( buffer, buffer.length );
+            while( true ) {
+                DatagramPacket incomingPacket = new DatagramPacket( incomingData, incomingData.length );
+                socket.receive( incomingPacket );
+                byte[] data = incomingPacket.getData();
+                ByteArrayInputStream in = new ByteArrayInputStream( data );
+                ObjectInputStream is = new ObjectInputStream( in );
 
-                socket.receive( request );
-                bis = new ByteArrayInputStream( buffer );
-                ois = new ObjectInputStream( bis );
-                this.parseEvent( (EventObject) ois.readObject() );
+                try {
+                    EventObject event = (EventObject) is.readObject();
+                    this.handleEvent( event );
+                } catch (Exception e) {
+                    // invalid event
+                }
+
+                InetAddress clientAddress = incomingPacket.getAddress();
+                int clientPort = incomingPacket.getPort();
+                String reply = "Thank you for the message";
+                byte[] replyBytes = reply.getBytes();
+                DatagramPacket replyPacket = new DatagramPacket(replyBytes, replyBytes.length, clientAddress, clientPort);
+                socket.send(replyPacket);
             }
         } catch ( Exception e ) { System.err.println( e ); }
     }
 
-    @Override
-    public void sendEvent(EventObject event) {
-
+    public void handleEvent( EventObject event ) {
+        this.handler.handle( event );
     }
 }

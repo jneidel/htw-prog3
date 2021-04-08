@@ -1,6 +1,7 @@
 package gui;
 
 import gui.comparators.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -9,25 +10,22 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import java.util.ArrayList;
+
 import java.util.Comparator;
 import java.util.List;
 
 import gl.MediaContent;
-import gl.MediaDB;
 import gl.Uploader;
-import cli.Parser;
+import javafx.scene.input.MouseEvent;
+import routing.*;
 import util.IllegalNumberOfArgumentsException;
+import util.Parser;
 
 public class Controller {
-    MediaDB db;
-    Uploader producer;
-    Parser parser;
-
-    public void setProducer( Uploader prod ) { this.producer = prod; }
-    public void setDb( MediaDB db ) {
-        this.db = db;
-        this.parser = new Parser( this.db.createProducer( "gui manual" ) );
+    Parser parser = new Parser();
+    EventHandler handler;
+    public void setHandler( EventHandler handler ) {
+        this.handler = handler;
     }
 
     @FXML
@@ -116,16 +114,19 @@ public class Controller {
         producerTable.setItems( this.producers );
         this.nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         this.countColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
+
+        // remove selection on one table when selecting the other - for delete
+        // src: https://stackoverflow.com/a/32436627
+        tableView.setOnMousePressed(new javafx.event.EventHandler<MouseEvent>(){
+            @Override public void handle(MouseEvent me){ producerTable.getSelectionModel().clearSelection(); }
+        });
+        producerTable.setOnMousePressed(new javafx.event.EventHandler<MouseEvent>(){
+            @Override public void handle(MouseEvent me){ tableView.getSelectionModel().clearSelection(); }
+        });
     }
 
     public void updateProperties() {
-        this.content.clear();
-        for ( MediaContent m : this.db.list() )
-            this.content.add( new MediaContentBean( m ) );
 
-        this.producers.clear();
-        for ( Uploader p : this.db.getProducers() )
-            this.producers.add( new ProducerBean( p ) );
     }
 
     // producers
@@ -137,22 +138,43 @@ public class Controller {
     private TableColumn<ProducerBean, Integer> countColumn;
     ObservableList<ProducerBean> producers = FXCollections.observableArrayList(ProducerBean.extractor());
 
-    // called by observer
-    public void setList( ArrayList list ) {
-        this.updateProperties();
+    // called by MediaDBObserver
+    public void setList( List<MediaContent> list, List<Uploader> producerList) {
+        // javafx stuff can be done from different thread unless using runnable
+        // src: https://stackoverflow.com/a/32489845
+        Platform.runLater(new Runnable() {
+            public void run() {
+                content.clear();
+                for ( MediaContent m : list )
+                    content.add( new MediaContentBean( m ) );
+
+                producers.clear();
+                for ( Uploader p : producerList )
+                    producers.add( new ProducerBean( p ) );
+            }
+        });
     }
 
     @FXML
     private Label lastAction;
-
     public void setStatus( String status ) {
-        this.lastAction.setText( status );
+        Platform.runLater(new Runnable() {
+            public void run() { lastAction.setText( status); }
+        });
     }
 
     // on Entf
     public void removeSelection() {
-        ObservableList<MediaContentBean> selected = this.tableView.getSelectionModel().getSelectedItems();
-        this.db.delete( (MediaContent) selected.get(0).src );
+        TableView.TableViewSelectionModel<MediaContentBean> tableViewSelectionModel = this.tableView.getSelectionModel();
+        TableView.TableViewSelectionModel<ProducerBean> producerBeanTableViewSelectionModel = this.producerTable.getSelectionModel();
+
+        if ( !tableViewSelectionModel.isEmpty() ) {
+            MediaContent selected = (MediaContent) this.tableView.getSelectionModel().getSelectedItems().get(0).src;
+            this.handler.handle( new RemoveMediaEvent( selected, selected.getAddress() ) );
+        } else if ( !producerBeanTableViewSelectionModel.isEmpty() ) {
+            Uploader selected = (Uploader) this.producerTable.getSelectionModel().getSelectedItems().get(0).src;
+            this.handler.handle( new RemoveProducerEvent( selected, selected.getName() ) );
+        }
     }
 
     @FXML
@@ -161,8 +183,8 @@ public class Controller {
             String text = this.uploadField.getText();
 
             try {
-                MediaContent res = this.parser.parseCreate( text.split(" ") );
-                db.upload( res );
+                UploadMediaEvent event = this.parser.parseMediaStrToEvent( text );
+                this.handler.handle( event );
             } catch(IllegalNumberOfArgumentsException e) {}
             catch (RuntimeException e){}
             // i don't have a way to let the user know
