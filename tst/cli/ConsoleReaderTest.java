@@ -1,6 +1,5 @@
-package cliTest;
+package cli;
 
-import cli.ConsoleReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import routing.EventHandler;

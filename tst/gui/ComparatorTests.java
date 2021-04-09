@@ -1,9 +1,8 @@
-package guiTest;
+package gui;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import gl.*;
-import gui.MediaContentBean;
 import gui.comparators.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

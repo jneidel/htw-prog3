@@ -8,7 +8,6 @@ import java.net.*;
 import java.util.EventObject;
 
 public class UDPServer extends Thread implements Server {
-    final int PORT = 8088;
     final int PACKET_SIZE = 8080;
 
     EventHandler handler;
@@ -16,10 +15,18 @@ public class UDPServer extends Thread implements Server {
         this.handler = handler;
     }
 
+    DatagramSocket socket;
+    public int init() {
+        try {
+            socket = new DatagramSocket();
+            return socket.getLocalPort();
+        } catch ( Exception e ) { e.printStackTrace(); }
+        return -1;
+    }
+
     public void run() {
         // src: http://www.coderpanda.com/java-socket-programming-transferring-java-object-through-socket-using-udp
         try {
-            DatagramSocket socket = new DatagramSocket( this.PORT );
             byte[] incomingData = new byte[this.PACKET_SIZE];
 
             while( true ) {

@@ -1,6 +1,5 @@
-package routingTest;
+package routing;
 
-import routing.GLEventListener;
 import gl.MediaContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import gl.Uploader;
 import gl.MediaDB;
 import util.Parser;
-import routing.*;
 
 public class GLEventsTest {
     MediaDB db;

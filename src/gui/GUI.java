@@ -11,12 +11,8 @@ import java.math.BigDecimal;
 
 import gl.MediaContent;
 import gl.MediaDB;
-import net.UDPClient;
-import net.UDPServer;
-import routing.GLEventListener;
-import routing.EventHandler;
-import routing.IOEventListener;
-import routing.LoggingEventListener;
+import net.*;
+import routing.*;
 import util.Args;
 import util.MediaGenerator;
 import cli.CLI;
@@ -80,10 +76,15 @@ public class GUI extends Application {
             new CLI( handler ).start();
         } else { // server
             if ( args.getProtocol().equals( "udp" ) ) {
-                new UDPServer( handler ).start();
-                new CLI( new UDPClient() ).start();
+                Server server = new UDPServer( handler );
+                int port = server.init();
+                server.start();
+                new CLI( new UDPClient( port ) ).start();
             } else {
-                // tcp
+                Server server = new TCPServer( handler );
+                int port = server.init();
+                server.start();
+                new CLI( new TCPClient( port ) ).start();
             }
         }
     }

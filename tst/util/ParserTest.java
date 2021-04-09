@@ -1,9 +1,8 @@
-package utilTest;
+package util;
 
 import gl.*;
 import org.junit.jupiter.api.BeforeEach;
 import routing.UploadMediaEvent;
-import util.Parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

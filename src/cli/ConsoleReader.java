@@ -7,7 +7,7 @@ import util.*;
 import java.util.EventObject;
 import java.util.Scanner;
 
-public class ConsoleReader extends Thread {
+public class ConsoleReader {
     char mode = 'c';
     Parser parser = new Parser();
     Client client = null;
@@ -23,7 +23,6 @@ public class ConsoleReader extends Thread {
     public void print( String msg ) { System.out.println( msg ); }
     public void printErr( String msg ) { System.out.println( msg ); }
 
-    public void run() { this.exec(); } // run as a thread
     public void exec() {
         try ( Scanner s = new Scanner( System.in ) ) {
             do {

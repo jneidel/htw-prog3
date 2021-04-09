@@ -15,10 +15,10 @@ public class CLI extends Thread {
     }
 
     public void run() {
-        if ( client == null ) { // local
-            new ConsoleReader( handler ).exec(); // same thread
+        if ( client == null ) {
+            new ConsoleReader( handler ).exec(); // local
         } else {
-            new ConsoleReader( client ).exec(); // different thread
+            new ConsoleReader( client ).exec(); // server-client
         }
     }
 }

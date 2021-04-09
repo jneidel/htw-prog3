@@ -6,11 +6,11 @@ import java.net.*;
 import java.util.EventObject;
 
 public class UDPClient implements Client {
-    final int SERVER_PORT = 8088;
-    final int PACKET_SIZE = 8080;
+    int serverPort;
 
     DatagramSocket socket;
-    public UDPClient() {
+    public UDPClient( int port ) {
+        this.serverPort = port;
         try {
             this.socket = new DatagramSocket();
         } catch ( SocketException e ) {
@@ -26,10 +26,10 @@ public class UDPClient implements Client {
             os.writeObject( event );
             os.flush();
             byte[] data = out.toByteArray();
-            DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), this.SERVER_PORT );
+            DatagramPacket sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), this.serverPort );
             this.socket.send( sendPacket );
 
-            byte[] buffer = new byte[this.PACKET_SIZE];
+            byte[] buffer = new byte[1024];
             DatagramPacket incomingPacket = new DatagramPacket( buffer, buffer.length );
             this.socket.setSoTimeout( 4000 ); // wait 4 sec for response
 
@@ -41,7 +41,4 @@ public class UDPClient implements Client {
         } catch ( Exception e ) { e.printStackTrace(); }
         return "";
     }
-
-    public void sendRegister() {}
-    public void sendUnregister() {}
 }
