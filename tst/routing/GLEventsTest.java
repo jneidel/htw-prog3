@@ -127,4 +127,57 @@ public class GLEventsTest {
         Uploader res = db.getProducer( name );
         assertEquals( name, res.getName() );
     }
+
+    @Test void readContent() {
+        String expected = db.getItemByAddress( sampleAddress ).toString() + "\n";
+
+        ReadEvent event = new ReadEvent( "", "content" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( expected, res );
+    }
+    @Test void readContent_filtered_existing() {
+        String expected = db.getItemByAddress( sampleAddress ).toString() + "\n";
+
+        String args = "LicensedVideo prod movie.mp4 700 Animal,Lifestyle 320 45 MP4 720 480 Warner";
+        MediaContent c = parser.parseMediaStrToMediaContent( args, db );
+        db.upload( c );
+
+        ReadEvent event = new ReadEvent( "", "content Audio" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( expected, res );
+    }
+    @Test void readContent_filtered_nonExisting() {
+        ReadEvent event = new ReadEvent( "", "content Video" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( "", res );
+    }
+
+    @Test void readUploader() {
+        String expected = prod.toString() + "\n";
+
+        ReadEvent event = new ReadEvent( "", "producer" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( expected, res );
+    }
+
+    @Test void readTag_used() {
+        String expected = "Used tags: News ";
+
+        ReadEvent event = new ReadEvent( "", "tag i" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( expected, res );
+    }
+    @Test void readTag_unused() {
+        String expected = "Unused tags: Animal Tutorial Lifestyle ";
+
+        ReadEvent event = new ReadEvent( "", "tag e" );
+        String res = this.handler.handleWithFeedback( event );
+
+        assertEquals( expected, res );
+    }
 }

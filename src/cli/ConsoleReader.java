@@ -123,7 +123,7 @@ public class ConsoleReader {
                 "  content [MEDIA_TYPE] - display files (filtered by type if given)\n" +
                 "  tag [i|e|included|excluded] - show list of tag (filter by whether or not they have been included)\n" +
                 "\nExamples:\n" +
-                "  uploader jneidel\n" +
+                "  uploader\n" +
                 "  content\n" +
                 "  content LicensedVideo\n" +
                 "  tag i\n";
