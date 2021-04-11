@@ -10,12 +10,13 @@ interface AudioI extends MediaContentI,UploadableI,Serializable {
     String getEncoding();
 }
 
-public class Audio extends MediaContent implements AudioI {
+public class Audio extends MediaContent implements AudioI, Serializable {
     static final long serialVersionUID = 1L;
 
     int samplingRate;
     String encoding;
 
+    public Audio() { super(); }
     public Audio( String address, long bitrate, Duration length, BigDecimal size, Uploader uploader, int samplingRate, String encoding ) {
         super( address, uploader, bitrate, length, size );
         this.samplingRate = samplingRate;

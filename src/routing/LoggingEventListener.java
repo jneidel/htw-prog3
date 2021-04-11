@@ -13,6 +13,11 @@ public class LoggingEventListener implements EventListener {
         String msg = translate( event.toString() );
         // write to log, io pkg func
     }
+    public String onEventWithFeedback( EventObject event ) {
+        // compatibility wrapper
+        this.onEvent( event );
+        return null;
+    }
     private String translateToDE( String event ) {
         switch ( event ) {
             case "media save": return "medien speichern";

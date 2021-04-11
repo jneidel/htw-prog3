@@ -2,11 +2,11 @@ package gl;
 
 import java.io.Serializable;
 
-interface UploaderI {
+interface UploaderI extends Serializable {
     String getName();
 }
 
-public class Uploader implements UploaderI, Serializable {
+public class Uploader implements UploaderI {
     private String name;
     private int count = 0;
 
@@ -21,6 +21,10 @@ public class Uploader implements UploaderI, Serializable {
     public int getCount() { return this.count; }
     public void incrementCount() { this.count++; }
     public void decrementCount() { this.count--; }
+
+    public String toString() {
+        return "producer " + name + ": " + count;
+    }
 }
 
 

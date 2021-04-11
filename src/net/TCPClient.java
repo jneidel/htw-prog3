@@ -35,7 +35,7 @@ public class TCPClient implements Client {
             byte[] responseBuffer = new byte[1024];
             inStream.read( responseBuffer );
             String response = new String( responseBuffer, "UTF-8" ).trim();
-            return "Response from server: " + response;
+            return response;
         } catch ( Exception e ) { e.printStackTrace(); }
         return "";
     }

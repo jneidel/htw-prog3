@@ -1,3 +1,6 @@
 data
 stream
 out
+db*
+*-test
+.attach*

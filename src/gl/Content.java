@@ -14,6 +14,7 @@ public class Content extends Uploadable implements ContentI,Serializable {
     private LinkedList<Tag> tags = new LinkedList<Tag>();
     public long accessCount = 0; // how often the content (represented by it's address) has been accessed
 
+    public Content() { super(); }
     public Content( String address, Uploader uploader ) {
         super( uploader );
         this.address = address;

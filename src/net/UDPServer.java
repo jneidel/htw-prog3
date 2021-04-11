@@ -36,16 +36,16 @@ public class UDPServer extends Thread implements Server {
                 ByteArrayInputStream in = new ByteArrayInputStream( data );
                 ObjectInputStream is = new ObjectInputStream( in );
 
+                String reply;
                 try {
                     EventObject event = (EventObject) is.readObject();
-                    this.handleEvent( event );
+                    reply = this.handleEvent( event );
                 } catch (Exception e) {
-                    // invalid event
+                    reply = "error, got invalid event object";
                 }
 
                 InetAddress clientAddress = incomingPacket.getAddress();
                 int clientPort = incomingPacket.getPort();
-                String reply = "Thank you for the message";
                 byte[] replyBytes = reply.getBytes();
                 DatagramPacket replyPacket = new DatagramPacket(replyBytes, replyBytes.length, clientAddress, clientPort);
                 socket.send(replyPacket);
@@ -53,7 +53,7 @@ public class UDPServer extends Thread implements Server {
         } catch ( Exception e ) { System.err.println( e ); }
     }
 
-    public void handleEvent( EventObject event ) {
-        this.handler.handle( event );
+    public String handleEvent( EventObject event ) {
+        return this.handler.handleWithFeedback( event );
     }
 }

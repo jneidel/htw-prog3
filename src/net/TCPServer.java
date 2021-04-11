@@ -33,23 +33,22 @@ public class TCPServer extends Thread implements Server {
             OutputStream outStream = socket.getOutputStream();
 
             while( socket.isConnected() ) {
+                String reply;
                 try {
                     EventObject event = (EventObject) inStream.readObject();
-                    this.handleEvent( event );
+                    reply = this.handleEvent( event );
                 } catch (Exception e) {
-                    System.err.println( "invalid event" );
-                    e.printStackTrace();
+                    reply = "error, got invalid event object";
                 }
 
-                String reply = "Thank you for the message";
                 byte[] replyBytes = reply.getBytes();
                 outStream.write( replyBytes );
                 outStream.flush();
             }
-        } catch ( Exception e ) { System.err.println( e ); }
+        } catch ( Exception e ) { e.printStackTrace(); }
     }
 
-    public void handleEvent( EventObject event ) {
-        this.handler.handle( event );
+    public String handleEvent( EventObject event ) {
+        return this.handler.handleWithFeedback( event );
     }
 }

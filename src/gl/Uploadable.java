@@ -1,8 +1,9 @@
 package gl;
 
+import java.io.Serializable;
 import java.util.Date;
 
-interface UploadableI {
+interface UploadableI extends Serializable {
     UploaderI getUploader();
     Date getUploadDate();
 }
@@ -11,6 +12,7 @@ public class Uploadable implements UploadableI {
     Uploader uploader;
     Date date = null;
 
+    public Uploadable() {}
     public Uploadable( Uploader uploader ) {
         this.uploader = uploader;
     }

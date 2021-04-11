@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 interface MediaDBI extends Observable,Serializable {
     void upload( MediaContent item );
     ArrayList<MediaContent> list();
-    void delete( String address );
 }
 
 public class MediaDB implements MediaDBI, Serializable {
@@ -21,9 +20,12 @@ public class MediaDB implements MediaDBI, Serializable {
     public void detachObserver(Observer o) { this.observers.remove( o ); }
     public void notifyObservers( String status ) {
         this.status = status;
-        for ( Observer o : this.observers ) {
-            o.update();
-        }
+
+        try {
+            for (Observer o : this.observers) {
+                o.update();
+            }
+        } catch ( NullPointerException e ) {} // transient observers list is null for io readObject instances
     }
     transient String status;
     public String getStatus() { return this.status; }
@@ -31,13 +33,23 @@ public class MediaDB implements MediaDBI, Serializable {
     ArrayList<MediaContent> db = new ArrayList<MediaContent>();
 
     // capacity management
-    public MediaDB() {} // passing capacity is optional
-    public MediaDB( BigDecimal maxCapacity ) { this.maxCapacity = maxCapacity; }
-    private BigDecimal maxCapacity = new BigDecimal( 5000000 ); // in kb, 5gb
+    private BigDecimal maxCapacity;
     private BigDecimal currentCapacity = new BigDecimal( 0 );
-    public BigDecimal getMaxCapacity() { return this.currentCapacity; }
+    private boolean isUsingCapacity = false;
+
+    public MediaDB() {} // passing capacity is optional
+    public MediaDB( BigDecimal maxCapacity ) {
+        this.maxCapacity = maxCapacity;
+        this.isUsingCapacity = true;
+    }
+    public BigDecimal getMaxCapacity() { return this.maxCapacity; }
     public BigDecimal getCurrentCapacity() { return this.currentCapacity; }
+    public boolean isUsingCapacity() { return isUsingCapacity; }
+
     private void addToCurrentSize( BigDecimal toAdd ) throws IllegalArgumentException {
+        if ( !isUsingCapacity )
+            return;
+
         BigDecimal newSize = this.currentCapacity.add( toAdd );
 
         if ( newSize.max( this.maxCapacity ) != this.maxCapacity )
@@ -45,6 +57,9 @@ public class MediaDB implements MediaDBI, Serializable {
         this.currentCapacity = newSize;
     }
     private void subtractFromCurrentSize( BigDecimal toSubtract ) {
+        if ( !isUsingCapacity )
+            return;
+
         this.currentCapacity = this.currentCapacity.subtract( toSubtract )
             .max( new BigDecimal( 0 ) ); // don't go below 0
     }
@@ -92,11 +107,14 @@ public class MediaDB implements MediaDBI, Serializable {
             this.notifyObservers( "producer delete" );
         }
     }
-    public void deleteProducer( String prodName ) {
+    public boolean deleteProducer( String prodName ) {
         try {
             Uploader prod = this.getProducer( prodName );
             this.deleteProducer( prod );
-        } catch ( Exception e ) {} // does not exist in the first place, do nothing
+            return true;
+        } catch ( Exception e ) {
+            return false;
+        } // does not exist in the first place, do nothing
     }
 
     private boolean hasItem( String itemAddress ) {
@@ -112,7 +130,9 @@ public class MediaDB implements MediaDBI, Serializable {
     }
 
     private Collection<Tag> usedTags = Collections.<Tag>emptySet();
-    private void combineTags( Collection<Tag> newTags ) {
+    public Collection<Tag> getUsedTags() { return usedTags; }
+
+    private void combineTags(Collection<Tag> newTags ) {
         // ref: https://www.baeldung.com/java-combine-multiple-collections
         Stream<Tag> combinedStream = Stream.concat(
                 this.usedTags.stream(),
@@ -178,36 +198,7 @@ public class MediaDB implements MediaDBI, Serializable {
         return null;
     }
 
-    /* need update?
-    public void update( String address, MediaContent newItem ) {
-        int matchingIndex = -1;
-        for ( int i = 0; i < this.db.size(); i++ ) {
-            if ( this.db.get( i ).getAddressNonlogging().equals( address ) ) {
-                matchingIndex = i;
-                break;
-            }
-        }
-
-        if ( matchingIndex < 0 ) {
-            throw new IllegalArgumentException( "Passed address does not exist in database" );
-        }
-
-        db.set( matchingIndex, newItem );
-        this.notifyObservers( "update" );
-    }
-    public void update( MediaContent item, MediaContent newItem ) {
-        int index = this.db.indexOf( item );
-
-        if ( index < 0 ) {
-            throw new IllegalArgumentException( "Passed address does not exist in database" );
-        }
-
-        db.set( index, newItem );
-        this.notifyObservers( "update" );
-    }
-    */
-
-    public void delete( String address ) {
+    public boolean delete( String address ) {
         int matchingIndex = -1;
         for ( int i = 0; i < this.db.size(); i++ ) {
             if ( this.db.get( i ).getAddressNonlogging().equals( address ) ) {
@@ -219,8 +210,9 @@ public class MediaDB implements MediaDBI, Serializable {
         if ( matchingIndex >= 0 ) {
             this.db.remove( matchingIndex );
             this.notifyObservers( "media delete" );
-        }
-        // if it does not exist in the first place -> do nothing
+            return true;
+        } else
+            return false;
     }
     public void delete( MediaContent item ) {
         int index = this.db.indexOf( item );
@@ -231,4 +223,21 @@ public class MediaDB implements MediaDBI, Serializable {
         }
         // if it does not exist in the first place -> do nothing
     }
+
+    public void replaceContents( MediaDB db ) {
+        this.db = db.getDb();
+        this.maxCapacity = db.getMaxCapacity();
+        this.currentCapacity = db.getCurrentCapacity();
+        this.isUsingCapacity = db.isUsingCapacity();
+        this.producers = db.getProducers();
+        this.usedTags = db.getUsedTags();
+    }
+
+    // missing beans setter/getter
+    public ArrayList<MediaContent> getDb() { return db; }
+    public void setDb(ArrayList<MediaContent> db) { this.db = db; }
+    public void setCurrentCapacity(BigDecimal currentCapacity) { this.currentCapacity = currentCapacity; }
+    public void setMaxCapacity(BigDecimal maxCapacity) { this.maxCapacity = maxCapacity; }
+    public void setUsedTags(Collection<Tag> usedTags) { this.usedTags = usedTags; }
+    public void setUsingCapacity(boolean usingCapacity) { isUsingCapacity = usingCapacity; }
 }

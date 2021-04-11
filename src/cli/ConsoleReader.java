@@ -48,8 +48,7 @@ public class ConsoleReader {
 
     public String handleEvent( EventObject event ) {
         if ( this.client == null ) { // local
-            this.handler.handle( event );
-            return event.toString();
+            return this.handler.handleWithFeedback( event );
         } else { // server-client
             return this.client.sendEvent( event );
         }
@@ -139,15 +138,10 @@ public class ConsoleReader {
                     return null;
                 }
                 case "uploader", "producer" -> {
-                    // Todo print producer list
+                    return new ReadEvent( "producer", "producer" );
                 }
                 case "content" -> {
-                    if ( args.length == 2 ) {
-                        String mediaType = args[1];
-                        // Todo print filtered list
-                    } else {
-                        // Todo print list
-                    }
+                    return new ReadEvent( "content", text );
                 }
                 case "tag" -> {
                     if ( args.length == 2 ) {
@@ -164,7 +158,10 @@ public class ConsoleReader {
                             default:
                                 throw new IllegalArgumentException( "Invalid tag parameter passed to tag.\nSee 'help' for help." );
                         }
-                        // Todo print tags depending on bool
+                        if ( included )
+                            return new ReadEvent( "tag", "tag " + "i" );
+                        else
+                            return new ReadEvent( "tag", "tag " + "e" );
                     } else {
                         throw new IllegalArgumentException( "Invalid tag parameter passed.\nSee 'help' for help." );
                     }
@@ -176,7 +173,6 @@ public class ConsoleReader {
         } else {
             throw new IllegalNumberOfArgumentsException( "1-2" );
         }
-        return null;
     }
 
     public EventObject parseDelete( String text ) {
@@ -231,8 +227,8 @@ public class ConsoleReader {
         final String HELP_MENU = "persist mode:\n\n" +
                 "  saveJOS - save with JOS\n" +
                 "  loadJOS - load from JOS\n" +
-                "  saveJBP - save with JBP\n" +
-                "  loadJBP - load from JBP\n" +
+                "  saveJBP - save with JBP - DISABLED\n" +
+                "  loadJBP - load from JBP - DISABLED\n" +
                 "  save ADDRESS - save instance to file\n" +
                 "  load ADDRESS - load instance from file\n";
 
@@ -251,11 +247,10 @@ public class ConsoleReader {
                 case "loadJOS" -> {
                     return new LoadEvent( "jos", "jos" );
                 }
-                case "saveJBP" -> {
-                    return new SaveEvent( "jbp", "jbp" );
-                }
-                case "loadJBP" -> {
-                    return new LoadEvent( "jbp", "jbp" );
+                case "saveJBP", "loadJBP" -> {
+                    //return new SaveEvent( "jbp", "jbp" );
+                    //return new LoadEvent( "jbp", "jbp" );
+                    throw new RuntimeException("Disabled");
                 }
                 default -> {
                     throw new IllegalArgumentException("Invalid command passed.\nSee 'help' for help.");

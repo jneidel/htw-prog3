@@ -18,6 +18,7 @@ public class Video extends MediaContent implements VideoI {
     int height;
     String encoding;
 
+    public Video() {}
     public Video(String address, long bitrate, Duration length, BigDecimal size, Uploader uploader, int width, int height, String encoding) {
         super(address, uploader, bitrate, length, size);
         Uploadable uploadable = new Uploadable( uploader );

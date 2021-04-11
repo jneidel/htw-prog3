@@ -9,8 +9,6 @@ import org.mockito.ArgumentCaptor;
 import routing.EventHandler;
 import routing.RemoveMediaEvent;
 
-import java.util.EventObject;
-
 public class TCPTest {
     Server server;
     Client client;
@@ -18,6 +16,7 @@ public class TCPTest {
 
     @BeforeEach void setup() {
         this.handlerMock = mock( EventHandler.class );
+        when( handlerMock.handleWithFeedback( any() ) ).thenReturn( "ok" );
         this.server = new TCPServer( handlerMock );
         int port = this.server.init();
         this.server.start();
@@ -30,7 +29,7 @@ public class TCPTest {
 
         // src: https://javadoc.io/static/org.mockito/mockito-core/3.9.0/org/mockito/ArgumentCaptor.html
         ArgumentCaptor<RemoveMediaEvent> argument = ArgumentCaptor.forClass( RemoveMediaEvent.class );
-        verify( this.handlerMock ).handle( argument.capture() );
+        verify( this.handlerMock ).handleWithFeedback( argument.capture() );
         assertEquals( event.toString(), argument.getValue().toString() );
         assertEquals( event.getMediaAddress(), argument.getValue().getMediaAddress() );
     }

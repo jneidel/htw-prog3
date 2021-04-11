@@ -21,7 +21,7 @@ public class MediaDBTest {
     Duration sampleDuration = Duration.ofSeconds( 0 + 1 * 60 + 0 * 60 * 60); // 1min
 
     @BeforeEach void setup() {
-        this.db = new MediaDB();
+        this.db = new MediaDB( new BigDecimal( 100000 ) );
         this.producer = this.db.createProducer( "default" );
 
         this.sampleItem = new MediaContent( this.sampleAddress, this.producer, this.sampleBitrate, this.sampleDuration, this.sampleSize );

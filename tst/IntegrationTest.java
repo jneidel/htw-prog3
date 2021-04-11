@@ -63,7 +63,7 @@ public class IntegrationTest {
         int port = server.init();
         server.start();
         new CLI( new UDPClient( port ) ).start();
-        try { Thread.sleep(200); } catch ( Exception e ) {}
+        try { Thread.sleep(400); } catch ( Exception e ) {}
 
         assertNotNull( db.getItemByAddress( "movie.mp4" ) );
     }

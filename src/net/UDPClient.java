@@ -36,7 +36,7 @@ public class UDPClient implements Client {
             try {
                 this.socket.receive( incomingPacket );
                 String response = new String( incomingPacket.getData() ).trim();
-                return "Response from server: " + response;
+                return response;
             } catch ( SocketTimeoutException e ) {} // no response, move on
         } catch ( Exception e ) { e.printStackTrace(); }
         return "";

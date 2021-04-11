@@ -1,12 +1,10 @@
 package routing;
 
-import gl.MediaContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import gl.Uploader;
-import gl.MediaDB;
+import gl.*;
 import util.Parser;
 
 public class GLEventsTest {
