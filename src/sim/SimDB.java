@@ -3,7 +3,7 @@ package sim;
 import gl.MediaContent;
 import gl.MediaDB;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
@@ -36,7 +36,7 @@ public class SimDB {
        }
     }
 
-    public ArrayList<MediaContent> list() {
+    public LinkedList<MediaContent> list() {
         return this.db.list();
     }
 }

@@ -4,3 +4,4 @@ out
 db*
 *-test
 .attach*
+log.txt

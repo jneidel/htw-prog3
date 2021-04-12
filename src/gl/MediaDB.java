@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 interface MediaDBI extends Observable,Serializable {
     void upload( MediaContent item );
-    ArrayList<MediaContent> list();
+    LinkedList<MediaContent> list();
 }
 
 public class MediaDB implements MediaDBI, Serializable {
@@ -30,7 +30,7 @@ public class MediaDB implements MediaDBI, Serializable {
     transient String status;
     public String getStatus() { return this.status; }
 
-    ArrayList<MediaContent> db = new ArrayList<MediaContent>();
+    LinkedList<MediaContent> db = new LinkedList<>();
 
     // capacity management
     private BigDecimal maxCapacity;
@@ -65,8 +65,8 @@ public class MediaDB implements MediaDBI, Serializable {
     }
 
     // producers
-    private ArrayList<Uploader> producers = new ArrayList<Uploader>();
-    public ArrayList<Uploader> getProducers() { return this.producers; }
+    private LinkedList<Uploader> producers = new LinkedList<>();
+    public LinkedList<Uploader> getProducers() { return this.producers; }
 
     private boolean hasProducer( String producerName ) {
         boolean producerExists = false;
@@ -173,13 +173,13 @@ public class MediaDB implements MediaDBI, Serializable {
         this.notifyObservers( "media upload" );
     }
 
-    public ArrayList<MediaContent> list() {
+    public LinkedList<MediaContent> list() {
         for ( MediaContent c : this.db )
             c.accessCount++;
         return this.db;
     }
-    public <T> ArrayList<T> list( String mediaType ) {
-        ArrayList<T> results = new ArrayList<T>();
+    public <T> LinkedList<T> list( String mediaType ) {
+        LinkedList<T> results = new LinkedList<>();
         for ( MediaContent item : this.db ) {
             if ( item.getClassName().equals( mediaType ) ) {
                 results.add( (T) item );
@@ -234,8 +234,8 @@ public class MediaDB implements MediaDBI, Serializable {
     }
 
     // missing beans setter/getter
-    public ArrayList<MediaContent> getDb() { return db; }
-    public void setDb(ArrayList<MediaContent> db) { this.db = db; }
+    public LinkedList<MediaContent> getDb() { return db; }
+    public void setDb(LinkedList<MediaContent> db) { this.db = db; }
     public void setCurrentCapacity(BigDecimal currentCapacity) { this.currentCapacity = currentCapacity; }
     public void setMaxCapacity(BigDecimal maxCapacity) { this.maxCapacity = maxCapacity; }
     public void setUsedTags(Collection<Tag> usedTags) { this.usedTags = usedTags; }

@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 
 public class MediaDBTest {
     MediaDB db;
@@ -114,12 +114,12 @@ public class MediaDBTest {
         this.db.upload( video );
 
         // only has video
-        ArrayList<Video> list = this.db.list( "Video" );
+        LinkedList<Video> list = this.db.list( "Video" );
         assertEquals( "video", list.get( 0 ).getAddress() );
         assertEquals( 1, list.size() );
 
         // only has audio
-        ArrayList<Audio> list2 = this.db.list( "Audio" );
+        LinkedList<Audio> list2 = this.db.list( "Audio" );
         assertEquals( "audio", list2.get( 0 ).getAddress() );
         assertEquals( 1, list.size() );
     }

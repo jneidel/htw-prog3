@@ -2,7 +2,7 @@ package sim;
 
 import gl.MediaContent;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class RemoverSim extends Thread {
@@ -15,7 +15,7 @@ public class RemoverSim extends Thread {
 
     public void run() {
         while( true ) {
-            ArrayList<MediaContent> list = db.list();
+            LinkedList<MediaContent> list = db.list();
             if ( list.size() > 0 ) {
                 int index = rand.nextInt( list.size() );
                 MediaContent item = list.get( index );

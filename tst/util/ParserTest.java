@@ -144,4 +144,17 @@ public class ParserTest {
 
         assertEquals( args, res.getMediaStr() );
     }
+
+    @Test void parseMediaStringToMediaContent_Video() {
+        String args = "Video prod movie.mp4 4000 Animal 320 200 MP4 720 480";
+        MediaContent res = this.parser.parseMediaStrToMediaContent( args, db );
+
+        assertEquals( "movie.mp4", res.getAddress() );
+    }
+    @Test void parseMediaStrToEvent_Video() {
+        String args = "Video prod movie.mp4 4000 Animal 320 200 MP4 720 480";
+        UploadMediaEvent res = this.parser.parseMediaStrToEvent( args );
+
+        assertEquals( args, res.getMediaStr() );
+    }
 }

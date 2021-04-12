@@ -9,9 +9,7 @@ import util.Parser;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.LinkedList;
 
 public class GLEventListener implements EventListener {
     Parser parser = new Parser();

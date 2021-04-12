@@ -216,6 +216,30 @@ public class Parser {
                 LicensedVideo lv = new LicensedVideo( address, bitrate, length, size, producer, width, height, encoding, holderName );
                 return this.addTags( tags, lv );
             }
+            case "video" -> {
+                final int REQUIRED_NR_OF_ARGS = MIN_REQUIRED_NR_OF_ARGS_FOR_CREATE + 3;
+                if (args.length != REQUIRED_NR_OF_ARGS)
+                    throw new IllegalNumberOfArgumentsException(mediaType, REQUIRED_NR_OF_ARGS);
+
+                String encoding = args[7];
+
+                int height;
+                try {
+                    height = Integer.parseInt(args[8]);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "invalid height: " + args[8] );
+                }
+
+                int width;
+                try {
+                    width = Integer.parseInt(args[9]);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "invalid width: " + args[9] );
+                }
+
+                Video v = new Video( address, bitrate, length, size, producer, width, height, encoding );
+                return this.addTags( tags, v );
+            }
             default -> {
                 return null;
             }
@@ -414,6 +438,29 @@ public class Parser {
                 String holderName = args[10];
 
                 // LicensedVideo prod movie.mp4 700 Animal,Lifestyle 320 45 MP4 720 480 Warner
+                return new UploadMediaEvent( text, text );
+            }
+            case "video" -> {
+                final int REQUIRED_NR_OF_ARGS = MIN_REQUIRED_NR_OF_ARGS_FOR_CREATE + 3;
+                if (args.length != REQUIRED_NR_OF_ARGS)
+                    throw new IllegalNumberOfArgumentsException(mediaType, REQUIRED_NR_OF_ARGS);
+
+                String encoding = args[7];
+
+                int height;
+                try {
+                    height = Integer.parseInt(args[8]);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "invalid height: " + args[8] );
+                }
+
+                int width;
+                try {
+                    width = Integer.parseInt(args[9]);
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException( "invalid width: " + args[9] );
+                }
+
                 return new UploadMediaEvent( text, text );
             }
             default -> {
