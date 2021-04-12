@@ -62,15 +62,15 @@ public class GUI extends Application {
         primaryStage.show();
 
         // generate examples
-        MediaGenerator gen = new MediaGenerator( db.createProducer( "media generator" ) );
-        MediaContent c1 = gen.generate();
-        MediaContent c2 = gen.generate();
-        MediaContent c3 = gen.generate();
-        MediaContent c4 = gen.generate();
-        db.upload( c1 );
-        db.upload( c2 );
-        db.upload( c3 );
-        db.upload( c4 );
+        try {
+            MediaGenerator gen = new MediaGenerator(db.createProducer("media generator"));
+            MediaContent c1 = gen.generate();
+            MediaContent c2 = gen.generate();
+            MediaContent c3 = gen.generate();
+            db.upload(c1);
+            db.upload(c2);
+            db.upload(c3);
+        } catch (IllegalArgumentException e) {} // not enough capacity
 
         if ( args.getProtocol() == null ) { // local
             new CLI( handler ).start();

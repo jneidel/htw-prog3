@@ -33,7 +33,9 @@
                 </children>
                 <padding> <Insets bottom="20.0" left="20.0" right="400.0" top="20.0" /> </padding>
                 <children>
-                    <HBox>
+                    <VBox>
+                        <Label text="Create Producer:"/>
+                        <TextField fx:id="createProducer" onKeyPressed="#handleCreateProducer"></TextField>
                         <TableView fx:id="producerTable" layoutX="20.0" layoutY="30.0" prefHeight="100.0" prefWidth="170.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" sortable="false" text="Name" />
@@ -43,7 +45,17 @@
                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                             </columnResizePolicy>
                         </TableView>
-                    </HBox>
+                    </VBox>
+                </children>
+                <children>
+                    <VBox>
+                        <Button text="SaveJOS" fx:id="saveJOS" onAction="#handleSaveJOS"></Button>
+                        <Button text="LoadJOS" fx:id="loadJOS" onAction="#handleLoadJOS"></Button>
+                        <Label text="Save Instance:"/>
+                        <TextField fx:id="saveInstance" onKeyPressed="#handleInstance"></TextField>
+                        <Label text="Load Instance:"/>
+                        <TextField fx:id="loadInstance" onKeyPressed="#handleInstance"></TextField>
+                    </VBox>
                 </children>
             </HBox>
             <TableView fx:id="tableView" layoutX="20.0" layoutY="30.0" prefHeight="300.0" prefWidth="600.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" VBox.vgrow="ALWAYS">

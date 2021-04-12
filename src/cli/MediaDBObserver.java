@@ -1,5 +1,6 @@
 package cli;
 
+import gl.MediaContent;
 import gl.MediaDB;
 import util.Observer;
 
@@ -10,6 +11,7 @@ public class MediaDBObserver implements Observer {
 
     public void update() {
         System.out.printf( "%n%s%n", this.db.getStatus() );
-        System.out.print( this.db.list().toArray().toString() );
+        for (MediaContent i : this.db.list() )
+            System.out.println( i );
     }
 }

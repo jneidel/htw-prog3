@@ -5,6 +5,7 @@ import net.Client;
 import util.*;
 
 import java.util.EventObject;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ConsoleReader {
@@ -43,7 +44,7 @@ public class ConsoleReader {
                     }
                 }
             } while( true );
-        }
+        } catch (NoSuchElementException e) {}
     }
 
     public String handleEvent( EventObject event ) {

@@ -20,6 +20,7 @@ public class GLEventListener implements EventListener {
         switch ( event.toString() ) {
             case "media increment counter" -> {
                 this.db.getItemByAddress( ((IncrementAccessCounterEvent) event).getMediaAddress() );
+                this.db.notifyObservers( "media increment count" );
             }
             case "producer create" -> {
                 this.db.createProducer( ((CreateProducerEvent) event ).getProducerStr() );
@@ -38,6 +39,8 @@ public class GLEventListener implements EventListener {
                 try {
                     MediaContent c = this.parser.parseMediaStrToMediaContent(((UploadMediaEvent) event).getMediaStr(), this.db);
                     this.db.upload(c);
+                } catch ( IllegalArgumentException e ) {
+                    this.db.notifyObservers( "upload failed: over capacity" );
                 } catch ( Exception e ) {} // disregard errMsg, already thrown on CLI
             }
         }
@@ -46,8 +49,9 @@ public class GLEventListener implements EventListener {
         switch ( event.toString() ) {
             case "media increment counter" -> {
                 try {
-                    return "incremented by one, new accessCounter: " +
-                            this.db.getItemByAddress(((IncrementAccessCounterEvent) event).getMediaAddress()).getAccessCount();
+                    MediaContent item = this.db.getItemByAddress(((IncrementAccessCounterEvent) event).getMediaAddress());
+                    this.db.notifyObservers( "media increment count" );
+                    return "incremented by one, new accessCounter: " + item.getAccessCount();
                 } catch ( Exception e ) {
                     return "failed to increment";
                 }
@@ -105,6 +109,8 @@ public class GLEventListener implements EventListener {
                     if ( notify != null )
                         res += "\n" + notify;
                     return res;
+                } catch ( IllegalArgumentException e ) {
+                    return "not enough capacity for upload";
                 } catch ( Exception e ) {
                     return "upload failed: " + e.getMessage();
                 }

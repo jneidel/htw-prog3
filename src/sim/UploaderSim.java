@@ -1,23 +1,49 @@
 package sim;
 
+import gl.MediaDB;
 import gl.Uploader;
+import routing.EventHandler;
+import routing.UploadMediaEvent;
 import util.MediaGenerator;
+import util.Parser;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 public class UploaderSim extends Thread {
-    static MediaGenerator gen;
-    static SimDB db;
+    MediaGenerator gen;
+    MediaDB db;
+    EventHandler handler;
+    Parser parser = new Parser();
+    Condition full;
+    Condition removing;
+    Lock lock;
 
-    public UploaderSim(SimDB db, Uploader producer) {
+    public UploaderSim(MediaDB db, EventHandler handler, Lock lock, Condition full, Condition removing, Uploader prod) {
         this.db = db;
-        this.gen = new MediaGenerator( producer );
+        this.handler = handler;
+        this.lock = lock;
+        this.full = full;
+        this.removing = removing;
+        this.gen = new MediaGenerator( prod );
     }
 
     public void run() {
         while( true ) {
-            db.upload( gen.generate() );
             try {
-                Thread.sleep(3000);
-            } catch(InterruptedException e){}
+                lock.lock(); // condition requires a lock to be used
+
+                UploadMediaEvent event = parser.parseMediaStrToEvent( gen.generateStr() );
+                String res = handler.handleWithFeedback(event);
+
+                if ( res.equals( "not enough capacity for upload" ) ) {
+                    full.signal();
+                    removing.await();
+                }
+            } catch (InterruptedException e) {}
+            finally {
+                lock.unlock();
+            }
         }
     }
 }

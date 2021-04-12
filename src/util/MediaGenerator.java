@@ -12,7 +12,7 @@ public class MediaGenerator {
     static String[] videoExtensions = { "mp4", "mkv" };
     static Number[] bitrates = { 320000, 124000, 50000 };
     static Number[] samplingRates = { 44000, 22000 };
-    static BigDecimal[] sizes = { new BigDecimal( "10000" ), new BigDecimal( "500000" ) };
+    static BigDecimal[] sizes = { new BigDecimal( "20" ), new BigDecimal( "10" ) };
     static Number[] widths = { 480, 720, 1080, 1920 };
     static String[] licenseHolders = { "Universal", "BMG", "GPLv3" };
     static LocalTime now = LocalTime.now();
@@ -21,7 +21,6 @@ public class MediaGenerator {
     static Random rand = new Random();
 
     Uploader producer;
-
     public MediaGenerator( Uploader producer ) {
         this.producer = producer;
     }
@@ -75,6 +74,56 @@ public class MediaGenerator {
         return new Video( generateAddress() + '.' + ext, random( bitrates ).longValue(),  random( durations ), random( sizes ), this.producer, (int) random( widths ), (int) random( widths ), ext.toUpperCase() );
     }
 
+    String generateAudioStr() {
+        return String.join( " ",
+                "Audio", producer.getName(),
+                generateAddress(),
+                "20 News 320 30 AAC 44000"
+        );
+    }
+    String generateAudioVideoStr() {
+        return String.join( " ",
+                "AudioVideo", producer.getName(),
+                generateAddress(),
+                "20 Lifestyle 320 200 MP4 720 480 44000"
+        );
+    }
+    String generateInteractiveVideoStr() {
+        return String.join( " ",
+                "InteractiveVideo", producer.getName(),
+                generateAddress(),
+                "20 , 320 80 MKV 640 480 P"
+        );
+    }
+    String generateLicesedAudioStr() {
+        return String.join( " ",
+                "LicensedAudio", producer.getName(),
+                generateAddress(),
+                "20 , 320 800 MP3 44000 UMG"
+        );
+    }
+    String generateLicesedAudioVideoStr() {
+        return String.join( " ",
+                "LicensedAudioVideo", producer.getName(),
+                generateAddress(),
+                "20 , 320 40 MP4 1080 720 44000 Warner"
+        );
+    }
+    String generateLicesedVideoStr() {
+        return String.join( " ",
+                "LicensedVideo", producer.getName(),
+                generateAddress(),
+                "20 Animal,Lifestyle 320 45 MP4 720 480 Warner"
+        );
+    }
+    String generateVideoStr() {
+        return String.join( " ",
+                "Video", producer.getName(),
+                generateAddress(),
+                "20 Animal 320 200 MP4 720 480"
+        );
+    }
+
     public MediaContent generate() {
         switch ( rand.nextInt( 7 ) ) { // number of functions
             case 0: return generateAudio();
@@ -84,6 +133,18 @@ public class MediaGenerator {
             case 4: return generateLicesedAudioVideo();
             case 5: return generateLicesedVideo();
             case 6: return generateVideo();
+            default: return null; // java complains
+        }
+    }
+    public String generateStr() {
+        switch ( rand.nextInt( 7 ) ) { // number of functions
+            case 0: return generateAudioStr();
+            case 1: return generateAudioVideoStr();
+            case 2: return generateInteractiveVideoStr();
+            case 3: return generateLicesedAudioStr();
+            case 4: return generateLicesedAudioVideoStr();
+            case 5: return generateLicesedVideoStr();
+            case 6: return generateVideoStr();
             default: return null; // java complains
         }
     }

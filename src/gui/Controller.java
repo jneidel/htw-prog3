@@ -1,5 +1,6 @@
 package gui;
 
+import gl.Tag;
 import gui.comparators.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -12,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.Comparator;
+import java.util.EventObject;
 import java.util.List;
 
 import gl.MediaContent;
@@ -138,8 +140,12 @@ public class Controller {
     private TableColumn<ProducerBean, Integer> countColumn;
     ObservableList<ProducerBean> producers = FXCollections.observableArrayList(ProducerBean.extractor());
 
+    // tags
+    @FXML private Label tagsUsed;
+    @FXML private Label tagsUnused;
+
     // called by MediaDBObserver
-    public void setList( List<MediaContent> list, List<Uploader> producerList) {
+    public void setList(List<MediaContent> list, List<Uploader> producerList) {
         // javafx stuff can be done from different thread unless using runnable
         // src: https://stackoverflow.com/a/32489845
         Platform.runLater(new Runnable() {
@@ -163,6 +169,12 @@ public class Controller {
         });
     }
 
+    @FXML private Button saveJOS;
+    @FXML private Button loadJOS;
+    @FXML private TextField saveInstance;
+    @FXML private TextField loadInstance;
+    @FXML private TextField createProducer;
+
     // on Entf
     public void removeSelection() {
         TableView.TableViewSelectionModel<MediaContentBean> tableViewSelectionModel = this.tableView.getSelectionModel();
@@ -177,17 +189,54 @@ public class Controller {
         }
     }
 
-    @FXML
-    private void handleUploadField( KeyEvent ke ) {
+    @FXML private void handleUploadField( KeyEvent ke ) {
         if ( ke.getCode() == KeyCode.ENTER ) {
-            String text = this.uploadField.getText();
-
             try {
-                UploadMediaEvent event = this.parser.parseMediaStrToEvent( text );
+                TextField field = (TextField) ke.getSource();
+                String text = this.uploadField.getText();
+                EventObject event = this.parser.parseMediaStrToEvent( text );
                 this.handler.handle( event );
-            } catch(IllegalNumberOfArgumentsException e) {}
-            catch (RuntimeException e){}
-            // i don't have a way to let the user know
+            } catch (RuntimeException e){}
         }
+    }
+    @FXML private void handleInstance( KeyEvent ke ) {
+        if ( ke.getCode() == KeyCode.ENTER ) {
+            try {
+                TextField field = (TextField) ke.getSource();
+                EventObject event = null;
+
+                if ( field == saveInstance ) {
+                    String text = this.saveInstance.getText();
+                    event = new SaveEvent( text, text );
+                } else if ( field == loadInstance ) {
+                    String text = this.loadInstance.getText();
+                    event = new LoadEvent( text, text );
+                }
+
+                this.handler.handle( event );
+            } catch (RuntimeException e){
+                e.printStackTrace();
+            }
+        }
+    }
+    @FXML private void handleCreateProducer( KeyEvent ke ) {
+        if ( ke.getCode() == KeyCode.ENTER ) {
+            try {
+                TextField field = (TextField) ke.getSource();
+                String text = this.createProducer.getText();
+                EventObject event = new CreateProducerEvent( text, text );
+                this.handler.handle( event );
+            } catch (RuntimeException e){
+                e.printStackTrace();
+            }
+        }
+    }
+    @FXML private void handleSaveJOS() {
+        SaveEvent event = new SaveEvent( "", "jos" );
+        this.handler.handle( event );
+    }
+    @FXML private void handleLoadJOS() {
+        LoadEvent event = new LoadEvent( "", "jos" );
+        this.handler.handle( event );
     }
 }

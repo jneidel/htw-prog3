@@ -6,6 +6,8 @@ import util.Observer;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +34,10 @@ public class MediaDB implements MediaDBI, Serializable {
 
     LinkedList<MediaContent> db = new LinkedList<>();
 
+    private final Lock dbLock = new ReentrantLock();
+    private final Lock capacityLock = new ReentrantLock();
+    private final Lock producerLock = new ReentrantLock();
+
     // capacity management
     private BigDecimal maxCapacity;
     private BigDecimal currentCapacity = new BigDecimal( 0 );
@@ -50,18 +56,28 @@ public class MediaDB implements MediaDBI, Serializable {
         if ( !isUsingCapacity )
             return;
 
-        BigDecimal newSize = this.currentCapacity.add( toAdd );
+        capacityLock.lock();
+        try {
+            BigDecimal newSize = this.currentCapacity.add(toAdd);
 
-        if ( newSize.max( this.maxCapacity ) != this.maxCapacity )
-            throw new IllegalArgumentException( "Database error: not enough space to add item" );
-        this.currentCapacity = newSize;
+            if (newSize.max(this.maxCapacity).compareTo(this.maxCapacity) > 0)
+                throw new IllegalArgumentException("Database error: not enough space to add item");
+            this.currentCapacity = newSize;
+        } finally {
+            capacityLock.unlock();
+        }
     }
     private void subtractFromCurrentSize( BigDecimal toSubtract ) {
         if ( !isUsingCapacity )
             return;
 
-        this.currentCapacity = this.currentCapacity.subtract( toSubtract )
-            .max( new BigDecimal( 0 ) ); // don't go below 0
+        capacityLock.lock();
+        try {
+            this.currentCapacity = this.currentCapacity.subtract( toSubtract )
+                .max( new BigDecimal( 0 ) ); // don't go below 0
+        } finally {
+            capacityLock.unlock();
+        }
     }
 
     // producers
@@ -69,42 +85,62 @@ public class MediaDB implements MediaDBI, Serializable {
     public LinkedList<Uploader> getProducers() { return this.producers; }
 
     private boolean hasProducer( String producerName ) {
-        boolean producerExists = false;
+        producerLock.lock();
+        try {
+            boolean producerExists = false;
 
-        for ( Uploader prod : this.producers ) {
-            if ( prod.getName().equals( producerName ) ) {
-                producerExists = true;
+            for ( Uploader prod : this.producers ) {
+                if ( prod.getName().equals( producerName ) ) {
+                    producerExists = true;
+                }
             }
+            return producerExists;
+        } finally {
+            producerLock.unlock();
         }
-        return producerExists;
     }
 
     public Uploader createProducer( String name ) {
         if ( this.hasProducer( name ) )
             throw new IllegalArgumentException( "Invalid producer: duplicate name" );
 
-        Uploader prod = new Uploader( name );
-        this.producers.add( prod );
-        this.notifyObservers( "producer create" );
-        return prod;
+        producerLock.lock();
+        try {
+            Uploader prod = new Uploader( name );
+            this.producers.add( prod );
+            this.notifyObservers( "producer create" );
+            return prod;
+        } finally {
+            producerLock.unlock();
+        }
     }
     public Uploader getProducer( String name ) {
         if ( !this.hasProducer( name ) )
             throw new IllegalArgumentException( "Invalid producer: does not exist" );
 
-        for ( Uploader prod : this.producers ) {
-            if ( prod.getName().equals( name ) ) {
-                return prod;
+        producerLock.lock();
+        try {
+            for ( Uploader prod : this.producers ) {
+                if ( prod.getName().equals( name ) ) {
+                    return prod;
+                }
             }
+            return null; // just to shut up java, does not happen due to hasProducer check
+        } finally {
+            producerLock.unlock();
         }
-        return null; // just to shut up java, does not happen due to hasProducer check
     }
     public void deleteProducer( Uploader prod ) {
-        int index = this.producers.indexOf( prod );
+        producerLock.lock();
+        try {
+            int index = this.producers.indexOf( prod );
 
-        if ( index >= 0 ) {
-            this.producers.remove( index );
-            this.notifyObservers( "producer delete" );
+            if ( index >= 0 ) {
+                this.producers.remove( index );
+                this.notifyObservers( "producer delete" );
+            }
+        } finally {
+            producerLock.unlock();
         }
     }
     public boolean deleteProducer( String prodName ) {
@@ -113,20 +149,25 @@ public class MediaDB implements MediaDBI, Serializable {
             this.deleteProducer( prod );
             return true;
         } catch ( Exception e ) {
-            return false;
-        } // does not exist in the first place, do nothing
+            return false; // does not exist in the first place, do nothing
+        }
     }
 
     private boolean hasItem( String itemAddress ) {
-        boolean itemExists = false;
+        dbLock.lock();
+        try {
+            boolean itemExists = false;
 
-        for ( MediaContent item : this.db ) {
-            if ( item.getAddressNonlogging().equals( itemAddress ) ) {
-                itemExists = true;
+            for ( MediaContent item : this.db ) {
+                if ( item.getAddressNonlogging().equals( itemAddress ) ) {
+                    itemExists = true;
+                }
             }
-        }
 
-        return itemExists;
+            return itemExists;
+        } finally {
+            dbLock.unlock();
+        }
     }
 
     private Collection<Tag> usedTags = Collections.<Tag>emptySet();
@@ -164,76 +205,115 @@ public class MediaDB implements MediaDBI, Serializable {
         if ( !this.hasProducer( itemToUpload.getUploader().getName() ) )
             throw new IllegalArgumentException( "Invalid producer: does not exist" );
 
-        itemToUpload.setUploadDateToNow();
-        this.addToCurrentSize( itemToUpload.getSize() );
-        itemToUpload.uploader.incrementCount();
-        this.combineTags( itemToUpload.getTags() );
+        dbLock.lock();
+        try {
+            itemToUpload.setUploadDateToNow();
+            this.addToCurrentSize(itemToUpload.getSize());
+            itemToUpload.uploader.incrementCount();
+            this.combineTags(itemToUpload.getTags());
 
-        this.db.add( itemToUpload );
-        this.notifyObservers( "media upload" );
+            this.db.add(itemToUpload);
+        } finally {
+            dbLock.unlock();
+        }
+        this.notifyObservers("media upload");
     }
 
     public LinkedList<MediaContent> list() {
-        for ( MediaContent c : this.db )
-            c.accessCount++;
-        return this.db;
+        dbLock.lock();
+        try {
+            for (MediaContent c : this.db)
+                c.accessCount++;
+            return this.db;
+        } finally {
+            dbLock.unlock();
+        }
     }
     public <T> LinkedList<T> list( String mediaType ) {
-        LinkedList<T> results = new LinkedList<>();
-        for ( MediaContent item : this.db ) {
-            if ( item.getClassName().equals( mediaType ) ) {
-                results.add( (T) item );
-                item.accessCount++;
+        dbLock.lock();
+        try {
+            LinkedList<T> results = new LinkedList<>();
+            for (MediaContent item : this.db) {
+                if (item.getClassName().equals(mediaType)) {
+                    results.add((T) item);
+                    item.accessCount++;
+                }
             }
+            return results;
+        } finally {
+            dbLock.unlock();
         }
-        return results;
     }
     public MediaContent getItemByAddress( String address ) {
-        for ( MediaContent item : this.db ) {
-            if ( item.getAddressNonlogging().equals( address ) ) {
-                item.accessCount++;
-                return item;
+        dbLock.lock();
+        try {
+            for (MediaContent item : this.db) {
+                if (item.getAddressNonlogging().equals(address)) {
+                    item.accessCount++;
+                    return item;
+                }
             }
+            return null;
+        } finally {
+            dbLock.unlock();
         }
-        return null;
     }
 
     public boolean delete( String address ) {
-        int matchingIndex = -1;
-        for ( int i = 0; i < this.db.size(); i++ ) {
-            if ( this.db.get( i ).getAddressNonlogging().equals( address ) ) {
-                matchingIndex = i;
-                break;
+        dbLock.lock();
+        try {
+            int matchingIndex = -1;
+            for (int i = 0; i < this.db.size(); i++) {
+                if (this.db.get(i).getAddressNonlogging().equals(address)) {
+                    matchingIndex = i;
+                    break;
+                }
             }
-        }
 
-        if ( matchingIndex >= 0 ) {
-            this.db.remove( matchingIndex );
-            this.notifyObservers( "media delete" );
-            return true;
-        } else
-            return false;
+            if (matchingIndex >= 0) {
+                MediaContent item = this.db.get( matchingIndex );
+                this.subtractFromCurrentSize( item.getSize() );
+                item.getUploader().decrementCount();
+                this.db.remove(matchingIndex);
+                this.notifyObservers("media delete");
+                return true;
+            } else
+                return false;
+        } finally {
+            dbLock.unlock();
+        }
     }
     public void delete( MediaContent item ) {
-        int index = this.db.indexOf( item );
+        dbLock.lock();
+        try {
+            int index = this.db.indexOf(item);
 
-        if ( index >= 0 ) {
-            this.db.remove( index );
-            this.notifyObservers( "media delete" );
+            if (index >= 0) {
+                this.subtractFromCurrentSize( item.getSize() );
+                item.getUploader().decrementCount();
+                this.db.remove(index);
+                this.notifyObservers("media delete");
+            } // if it does not exist in the first place -> do nothing
+        } finally {
+            dbLock.unlock();
         }
-        // if it does not exist in the first place -> do nothing
     }
 
     public void replaceContents( MediaDB db ) {
-        this.db = db.getDb();
-        this.maxCapacity = db.getMaxCapacity();
-        this.currentCapacity = db.getCurrentCapacity();
-        this.isUsingCapacity = db.isUsingCapacity();
-        this.producers = db.getProducers();
-        this.usedTags = db.getUsedTags();
+        dbLock.lock();
+        try {
+            this.db = db.getDb();
+            this.maxCapacity = db.getMaxCapacity();
+            this.currentCapacity = db.getCurrentCapacity();
+            this.isUsingCapacity = db.isUsingCapacity();
+            this.producers = db.getProducers();
+            this.usedTags = db.getUsedTags();
+        } finally {
+            dbLock.unlock();
+        }
     }
 
-    // missing beans setter/getter
+    // missing beans setters/getters
     public LinkedList<MediaContent> getDb() { return db; }
     public void setDb(LinkedList<MediaContent> db) { this.db = db; }
     public void setCurrentCapacity(BigDecimal currentCapacity) { this.currentCapacity = currentCapacity; }
