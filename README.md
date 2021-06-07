@@ -7,7 +7,7 @@ External sources are linked to in the referring function.
 
 ## Architecture
 
-![Architekturdiagram](Architekturdiagram.png)
+![Architekturdiagramm](Architekturdiagramm.png)
 
 `gl`, `io`, `net` and `util` provide services for the above lying packages.
 `routing` enables communication between the model of `gl` and the view-controllers of `gui` and `cli`.
