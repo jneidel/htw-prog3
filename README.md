@@ -1,9 +1,6 @@
-# Programmierung 3
+# Programmierung 3 Beleg
 
-Created by:
-**Jonathan Neidel** (573619)
-
-External sources are linked to in the referring function.
+[Anforderungen des Belegs](Anforderungen.pdf)
 
 ## Architecture
 
